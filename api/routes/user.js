@@ -6,7 +6,7 @@ const conexion = require('../config/conexion');
 const jwt = require('jsonwebtoken');
 
 // Listar usuarios
-router.get('/', (req,res)=>{
+router.get('/ListarUser', (req,res)=>{
     conexion.query('SELECT * FROM usuario', (err,rows,fields) => {
       if(!err){
         res.json(rows);
@@ -15,6 +15,18 @@ router.get('/', (req,res)=>{
       }
     })
 });
+router.post('/NewUser', (req,res)=>{
+  const { Nombres, Apellidos, Usuario, password, Celular, email, Rol, Area}= req.body;
+  conexion.query(`INSERT INTO usuario (Nombre_Usuario, Apellido_Usuario, Usuario, Contraseña, Celular, email, Fk_Id_Rol, Fk_Id_Area) VALUES ('${Nombres}','${Apellidos}' ,'${Usuario}','${password}' ,'${Celular}','${email}' ,'${Rol}','${Area}')`,
+  (err, rows, fields)=>{
+    if (err) throw err;
+    else{
+        res.json({status:'Usuario Agregado'})
+        console.log('Usuario Agregado');
+    }
+  })
+  console.log('Llego al servicio', req.body);
+})
 //validar usuario
 router.post('/signin', (req,res) => {
     const { Usuario, password } = req.body;
