@@ -9,6 +9,8 @@ app.use(cors());
 
 //Routes
 const userRoute = require('./api/routes/user');
+const rolRoute =require('./api/routes/rol');
 app.use('/user',userRoute);
+app.use('/rol', rolRoute);
 
 module.exports = app;
