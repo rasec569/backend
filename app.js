@@ -10,7 +10,10 @@ app.use(cors());
 //Routes
 const userRoute = require('./api/routes/user');
 const rolRoute =require('./api/routes/rol');
+const areaRoute =require('./api/routes/area');
+
 app.use('/user',userRoute);
 app.use('/rol', rolRoute);
+app.use('/area',areaRoute);
 
 module.exports = app;
