@@ -18,7 +18,7 @@ router.get('/', (req,res)=>{
 // Buscar usuario con el parametro id que se le pasa en la direccion
 router.get('/:id',(req, res)=>{
   const{id}=req.params
-  conexion.query('SELECT * FROM  usuario where Id_Usuario=? ',[id],(err, rows, fields)=>{
+  conexion.query('SELECT Id_Usuario, Nombre_Usuario, Apellido_Usuario, Usuario, Celular, email, Fk_Id_Rol as Rol, Fk_Id_Area as Area  FROM  usuario where Id_Usuario=? ',[id],(err, rows, fields)=>{
       if(!err){
           res.json(rows);
         }else{
@@ -56,14 +56,13 @@ router.delete('/:id',(req, res)=>{
 //modificar
 router.put('/:id',(req, res)=>{
   const{id}=req.params
-  const { Nombres, Apellidos, Usuario, password, Celular, email, Rol, Area}= req.body;
+  const { Nombre_Usuario, Apellido_Usuario, Usuario, Celular, email, Rol, Area}= req.body;
   let sql = `update usuario set 
-              Nombre_Usuario ='${Nombres}',
-              Apellido_Usuario='${Apellidos}'
+              Nombre_Usuario ='${Nombre_Usuario}',
+              Apellido_Usuario='${Apellido_Usuario}',
               Usuario ='${Usuario}',
-              Contraseña='${password}'
               Celular ='${Celular}',
-              email='${email}'
+              email='${email}',
               Fk_Id_Rol ='${Rol}',
               Fk_Id_Area='${Area}'
               where Id_Usuario = '${id}'`  
