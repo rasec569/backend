@@ -1,9 +1,9 @@
 const mysql = require('mysql');
 const conexion=mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: 'mcgconstrucciones',
-    database: 'mcgdb'
+    host: '192.232.221.82',
+    user: 'ampublic_mcgsoft',
+    password: 'XSGGXKe=385[',
+    database: 'ampublic_mcgcartera'
 });
 
 conexion.connect((err)=>{

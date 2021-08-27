@@ -43,9 +43,8 @@ router.get('/:id', (req,res)=>{
 //crear
 router.post('/', (req,res)=>{
   const {Manzana, Num_Casa, Valor_Inicial, Ficha_Catastral, Escritura, Matricula_inmobiliaria, Estado, Fk_Id_Proyecto}= req.body;
-  conexion.query(`INSERT INTO inmueble (Manzana, Num_Casa,Valor_Inicial, Ficha_Catastral, Escritura, Matricula_inmobiliaria, 
-                  Estado, Fk_Id_Proyecto) VALUES ('${Manzana}','${Num_Casa}','${Valor_Inicial}','${Ficha_Catastral}','${Escritura}'
-                  ,'${Matricula_inmobiliaria}','${Estado}','${Fk_Id_Proyecto}')`, (req, rows, fields)=>{
+  conexion.query(`INSERT INTO inmueble (Manzana, Num_Casa,Valor_Inicial, Ficha_Catastral, Escritura, Matricula_inmobiliaria, Estado, Fk_Id_Proyecto) VALUES ('${Manzana}','${Num_Casa}','${Valor_Inicial}','${Ficha_Catastral}','${Escritura}','${Matricula_inmobiliaria}','${Estado}','${Fk_Id_Proyecto}')`, 
+  (err, rows, fields)=>{
     if (err) throw err;
     else{
       res.json({status:'Inmuble agregado'})
@@ -75,7 +74,7 @@ router.put('/:id',(req, res)=>{
               Escritura ='${Escritura}',
               Matricula_inmobiliaria='${Matricula_inmobiliaria}',
               Estado ='${Estado}',
-              Fk_Id_Proyecto='${Fk_Id_Proyecto}',
+              Fk_Id_Proyecto='${Fk_Id_Proyecto}'
               where Id_Inmueble = '${id}'`  
   conexion.query(sql, (err, rows, fields)=>{
       if(err) throw err

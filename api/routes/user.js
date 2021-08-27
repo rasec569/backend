@@ -28,7 +28,7 @@ router.get('/:id',(req, res)=>{
 });
 //crear usuario
 router.post('/', (req,res)=>{
-  const { Nombre_Usuario, Apellido_Usuario, Usuario, password, Celular, email, Rol, Area}= req.body;
+  const {Nombre_Usuario, Apellido_Usuario, Usuario, password, Celular, email, Rol, Area}= req.body;
   conexion.query(`INSERT INTO usuario (Nombre_Usuario, Apellido_Usuario, Usuario, Contraseña, Celular, email, Fk_Id_Rol, Fk_Id_Area) VALUES ('${Nombre_Usuario}','${Apellido_Usuario}' ,'${Usuario}','${password}' ,'${Celular}','${email}' ,'${Rol}','${Area}')`,
   (err, rows, fields)=>{
     if (err) throw err;
