@@ -9,6 +9,7 @@ app.use(cors());
 
 //Routes
 const userRoute = require('./api/routes/user');
+const clientsRoute = require('./api/routes/clients');
 const rolRoute =require('./api/routes/rol');
 const areaRoute =require('./api/routes/area');
 const proyectoRoute= require('./api/routes/proyecto');
@@ -19,5 +20,6 @@ app.use('/rol', rolRoute);
 app.use('/area',areaRoute);
 app.use('/proyecto', proyectoRoute);
 app.use('/inmueble', inmuebleRoute);
+app.use('/clients',clientsRoute);
 
 module.exports = app;
