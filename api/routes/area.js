@@ -7,14 +7,13 @@ const jwt = require('jsonwebtoken');
 
 // Listar area
 router.get('/', (req,res)=>{
-    conexion.query('SELECT * FROM area', (err,rows,fields) => {
-      if(!err){
-        res.json(rows);
-        console.log(res);
-      }else{
-        console.log(err);
-      }
-    })
+  conexion.query('CALL `ConsultarAreas`()', (err,rows,fields) => {
+    if(!err){
+      res.json(rows);
+    }else{
+      console.log(err);
+    }
+  })
 });
 
 module.exports = router;

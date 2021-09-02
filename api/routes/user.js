@@ -95,6 +95,7 @@ router.post('/signin', (req,res) => {
             console.log(err);
           }
     }
+    
     )
 });
 router.post('/test', vericarToken, (req,res)=>{

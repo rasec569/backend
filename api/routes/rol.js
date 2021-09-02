@@ -5,8 +5,18 @@ const conexion = require('../config/conexion');
 // token para las peticiones a mysql
 const jwt = require('jsonwebtoken');
 
-// Listar rol
+// Listar roles
 router.get('/', (req,res)=>{
+  conexion.query('CALL `ConsultarRoles`()', (err,rows,fields) => {
+    if(!err){
+      res.json(rows);
+    }else{
+      console.log(err);
+    }
+  })
+});
+
+/* router.get('/', (req,res)=>{
     conexion.query('SELECT * FROM rol', (err,rows,fields) => {
       if(!err){
         res.json(rows);
@@ -15,7 +25,7 @@ router.get('/', (req,res)=>{
         console.log(err);
       }
     })
-});
+}); */
 // Buscar rol con el parametro id que se le pasa en la direccion
 router.get('/:id',(req, res)=>{
   const{id}=req.params

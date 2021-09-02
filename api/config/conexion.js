@@ -1,19 +1,20 @@
 const mysql = require('mysql');
 const conexion=mysql.createConnection({
-    host: '50.62.81.146',
-    user: 'root',
-    password: 'yosoymadi',
-    database: 'mcgdb'
+    host: '192.232.221.82',
+    user: 'ampublic_mcgsoft',
+    password: 'XSGGXKe=385[',
+    database: 'ampublic_mcgcartera'
 });
 
 conexion.connect((err)=>{
     if(err){
-        console.log('error en conexxion: '+ err)
+        console.log('error en conexxion: '+ err);
     }
     else{
         console.log('Conexion Exitosa!!!')
     }
 });
+conexion.end();
 
 module.exports = conexion;
 
