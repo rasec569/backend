@@ -1,9 +1,14 @@
 const mysql = require('mysql');
 const conexion=mysql.createConnection({
-    host: '192.232.221.82',
+    host: '72.167.41.112',
+    user: 'mitch',
+    password: 'Hj-b!HGr3Z%d',
+    database: 'mcgdb'
+
+    /* host: '192.232.221.82',
     user: 'ampublic_mcgsoft',
     password: 'XSGGXKe=385[',
-    database: 'ampublic_mcgcartera'
+    database: 'ampublic_mcgcartera' */
 });
 
 conexion.connect((err)=>{
@@ -14,7 +19,7 @@ conexion.connect((err)=>{
         console.log('Conexion Exitosa!!!')
     }
 });
-conexion.end();
+/* conexion.end(); */
 
 module.exports = conexion;
 

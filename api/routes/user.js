@@ -7,6 +7,16 @@ const jwt = require('jsonwebtoken');
 
 // Listar usuarios
 router.get('/', (req,res)=>{
+  conexion.query('CALL `ConsultarUsuarios`()', (err,rows,fields) => {
+    if(!err){
+      res.json(rows);
+    }else{
+      console.log(err);
+    }
+  })
+});
+
+/* router.get('/', (req,res)=>{
     conexion.query('SELECT * FROM usuario', (err,rows,fields) => {
       if(!err){
         res.json(rows);
@@ -14,7 +24,7 @@ router.get('/', (req,res)=>{
         console.log(err);
       }
     })
-});
+}); */
 // Buscar usuario con el parametro id que se le pasa en la direccion
 router.get('/:id',(req, res)=>{
   const{id}=req.params
