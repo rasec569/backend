@@ -1,4 +1,5 @@
 const mysql = require('mysql');
+
 const util = require('util')
 
 const conexion=mysql.createPool({
@@ -7,6 +8,12 @@ const conexion=mysql.createPool({
     user: 'mitch',
     password: 'Hj-b!HGr3Z%d',
     database: 'mcgdb'
+
+    /* host: '192.232.221.82',
+    user: 'ampublic_mcgsoft',
+    password: 'XSGGXKe=385[',
+    database: 'ampublic_mcgcartera' */
+
 });
 
 conexion.getConnection((err, connection) => {
@@ -30,8 +37,6 @@ conexion.getConnection((err, connection) => {
 
 // Promisify for Node.js async/await.
 conexion.query = util.promisify(conexion.query)
-
-
 module.exports = conexion;
 
 /* Ejecute la siguiente consulta en la Base De datos

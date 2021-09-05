@@ -6,14 +6,14 @@ const conexion = require("../config/conexion");
 const jwt = require("jsonwebtoken");
 
 // Listar Proyectos
-router.get("/", vericarToken, (req, res) => {
-  conexion.query("SELECT * FROM proyecto", (err, rows, fields) => {
-    if (!err) {
+router.get('/', (req,res)=>{
+  conexion.query('CALL `ConsultarProyectos`()', (err,rows,fields) => {
+    if(!err){
       res.json(rows);
-    } else {
+    }else{
       console.log(err);
     }
-  });
+  })
 });
 // Buscar Proyecto
 router.get("/:id", vericarToken, (req, res) => {
