@@ -10,7 +10,7 @@ const jwt = require('jsonwebtoken');
 
 //listar todos
 router.get('/', (req,res)=>{
-  conexion.query('SELECT * FROM inmueble', (err,rows,fields)=>{
+  conexion.query('CALL `ConsultarInmueble`()', (err,rows,fields) => {
     if(!err){
       res.json(rows);
     }else{
