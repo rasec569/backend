@@ -1,20 +1,36 @@
 const mysql = require('mysql');
-const conexion=mysql.createConnection({
+const util = require('util')
+
+const conexion=mysql.createPool({
+    connectionLimit: 10,
     host: '72.167.41.112',
     user: 'mitch',
     password: 'Hj-b!HGr3Z%d',
     database: 'mcgdb'
 });
 
-conexion.connect((err)=>{
-    if(err){
-        console.log('error en conexxion: '+ err);
+conexion.getConnection((err, connection) => {
+    if (err) {
+        if (err.code === 'PROTOCOL_CONNECTION_LOST') {
+            console.error('Database connection was closed.')
+        }
+        if (err.code === 'ER_CON_COUNT_ERROR') {
+            console.error('Database has too many connections.')
+        }
+        if (err.code === 'ECONNREFUSED') {
+            console.error('Database connection was refused.')
+        }
     }
-    else{
-        console.log('Conexion Exitosa!!!')
-    }
+    if (connection){
+        connection.release();
+        console.log("Successful connection!")
+    } 
+    return
 });
-//conexion.end();
+
+// Promisify for Node.js async/await.
+conexion.query = util.promisify(conexion.query)
+
 
 module.exports = conexion;
 
