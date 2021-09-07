@@ -42,6 +42,17 @@ router.get("/", (req, res) => {
   });
 });
 
+router.get("/:id", (req, res) => {
+  const {
+    id
+  } = req.params;
+  conexion.query(`CALL ConsultarCliente('${id}')`, (err, rows, fields) => {
+    if (!err) {
+      res.json(rows[0]);
+    }
+  });
+});
+
 //Cliente
 router.post("/", (req, res) => {
   const {
