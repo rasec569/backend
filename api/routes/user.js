@@ -9,7 +9,7 @@ const jwt = require('jsonwebtoken');
 router.get('/', (req,res)=>{
   conexion.query('CALL `ConsultarUsuarios`()', (err,rows,fields) => {
     if(!err){
-      res.json(rows);
+      res.json(rows[0]);
     }else{
       console.log(err);
     }

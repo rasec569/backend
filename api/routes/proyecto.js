@@ -5,61 +5,110 @@ const conexion = require("../config/conexion");
 // token para las peticiones a mysql
 const jwt = require("jsonwebtoken");
 
+// check tocken
+router.use(function (req, res, next) {
+  //Validate users access token on each request to our API.
+  var token = req.headers.authorization.split(" ")[1];
+  if (token) {
+    jwt.verify(token, 'MCG', function (err, decoded) {
+      if (err) {
+        return res.status(403).send({
+          success: false,
+          message: 'Authorization required.'
+        });
+      } else {
+        const content = jwt.verify(token, 'MCG');
+        req.data = content;
+        next();
+      }
+    });
+  } else {
+    res.status(403).send({
+      success: false,
+      message: 'No token provided.'
+    });
+    next();
+  }
+});
+
 // Listar Proyectos
 router.get('/', (req,res)=>{
   conexion.query('CALL `ConsultarProyectos`()', (err,rows,fields) => {
     if(!err){
-      res.json(rows);
+      res.json(rows[0]);
     }else{
       console.log(err);
     }
   })
 });
 // Buscar Proyecto
-router.get("/:id", vericarToken, (req, res) => {
-  const { id } = req.params;
-  conexion.query(
-    "SELECT Id_Proyecto, Nombre_Proyecto, Ubicacion_Proyecto FROM proyecto where Id_Proyecto=? ",
-    [id],
-    (err, rows, fields) => {
-      if (!err) {
-        res.json(rows);
-      } else {
-        console.log(err);
-      }
+router.get("/:id", (req, res) => {
+  const {
+    id
+  } = req.params;
+  conexion.query(`CALL ConsultarProyecto('${id}')`, (err, rows, fields) => {
+    if (!err) {
+      res.json(rows[0]);
     }
-  );
+  });
 });
+
 //crear Proyecto
-router.post("/", vericarToken, (req, res) => {
-  const { Nombre_Proyecto, Ubicacion_Proyecto } = req.body;
+router.post("/", (req, res) => {
+
+  const {
+    nombre,
+    ubicacion
+  } =
+  req.body;
+  console.log(req.body)
   conexion.query(
-    `INSERT INTO proyecto (Nombre_Proyecto, Ubicacion_Proyecto) VALUES ('${Nombre_Proyecto}','${Ubicacion_Proyecto}')`,
+    `CALL CrearProyecto('${nombre}', '${ubicacion}')`,
     (err, rows, fields) => {
-      if (err) throw err;
-      else {
-        res.json({ status: "Proyecto Agregado" });
-        console.log("Proyecto Agregado");
+      console.log(rows)
+      if (!err) {
+        res.json(rows[0]);
       }
     }
   );
 });
 
 //eliminar
-router.delete("/:id", vericarToken, (req, res) => {
-  const { id } = req.params;
-
-  let sql = `delete from proyecto where Id_Proyecto = '${id}'`;
-  conexion.query(sql, (err, rows, fields) => {
-    if (err) throw err;
-    else {
-      res.json({ status: "Proyecto eliminado" });
+router.delete("/", (req, res) => {
+  const {
+    id
+  } = req.body;
+  conexion.query(`CALL EliminarProyecto('${id}')`, (err, rows, fields) => {
+    if (!err) {
+      res.json(rows[0]);
+    }else{
+      res.json(err);
     }
   });
 });
 
 //modificar
-router.put("/:id", vericarToken, (req, res) => {
+router.put("/:id", (req, res) => {
+  const {
+    id
+  } = req.params;
+  const {
+    nombre,
+    ubicacion,
+    estado
+  } = req.body;
+  let sql = `CALL EditarProyecto('${id}', '${nombre}', '${ubicacion}', '${estado}')`;
+  conexion.query(sql, (err, rows, fields) => {
+    if (!err) {
+      if (!err) {
+        res.json(rows[0]);
+      }
+    }
+  });
+});
+
+
+/* router.put("/:id", vericarToken, (req, res) => {
   const { id } = req.params;
   const { Nombre_Proyecto, Ubicacion_Proyecto } = req.body;
   let sql = `update proyecto set 
@@ -72,7 +121,7 @@ router.put("/:id", vericarToken, (req, res) => {
       res.json({ status: "Proyecto modificado" });
     }
   });
-});
+}); */
 // funcion para vericar Token cada que hace una peticion a la Bd
 function vericarToken(req, res, next) {
   if (!req.headers.authorization) return res.status(401).json("No autorizado");
