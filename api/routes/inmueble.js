@@ -7,10 +7,34 @@ const jwt = require('jsonwebtoken');
 
 // enviar mas de un parametro (/:id/:nombre)
 //se obtiene con el req.params.id, req.params.nombre
-
+// check tocken
+router.use(function (req, res, next) {
+  //Validate users access token on each request to our API.
+  var token = req.headers.authorization.split(" ")[1];
+  if (token) {
+    jwt.verify(token, 'MCG', function (err, decoded) {
+      if (err) {
+        return res.status(403).send({
+          success: false,
+          message: 'Authorization required.'
+        });
+      } else {
+        const content = jwt.verify(token, 'MCG');
+        req.data = content;
+        next();
+      }
+    });
+  } else {
+    res.status(403).send({
+      success: false,
+      message: 'No token provided.'
+    });
+    next();
+  }
+});
 //listar todos
 router.get('/', (req,res)=>{
-  conexion.query('CALL `ConsultarInmueble`()', (err,rows,fields) => {
+  conexion.query('CALL `ConsultarInmuebles`()', (err,rows,fields) => {
     if(!err){
       res.json(rows);
     }else{
@@ -18,70 +42,62 @@ router.get('/', (req,res)=>{
     }
   })
 });
-//listar por proyecto
+//listar por proyecto ConsultarInmueblesProyecto
 router.get('/proyecto/:id', (req,res)=>{
-  const{id}=req.params
-  conexion.query('SELECT * FROM inmueble where Fk_Id_Proyecto=?', [id],(err,rows,fields)=>{
-    if(!err){
-      res.json(rows);
-    }else{
-      console.log(err);
+  const {id} = req.params;
+  conexion.query(`CALL ConsultarInmueblesProyecto('${id}')`, (err, rows, fields) => {
+    if (!err) {
+      res.json(rows[0]);
     }
-  })
+  });
 });
 //Buscar inmueble
 router.get('/:id', (req,res)=>{
-  const{id}=req.params
-  conexion.query('SELECT * FROM inmueble where Id_Inmueble=?', [id],(err, rows, fields)=>{
-    if(!err){
-      res.json(rows);
-    }else{
-      console.log(err);
+  const {id} = req.params;
+  conexion.query(`CALL ConsultarInmueble('${id}')`, (err, rows, fields) => {
+    if (!err) {
+      res.json(rows[0]);
     }
-  })
+  });
 });
 //crear
-router.post('/', (req,res)=>{
-  const {Manzana, Num_Casa, Valor_Inicial, Ficha_Catastral, Escritura, Matricula_inmobiliaria, Estado, Fk_Id_Proyecto}= req.body;
-  conexion.query(`INSERT INTO inmueble (Manzana, Num_Casa,Valor_Inicial, Ficha_Catastral, Escritura, Matricula_inmobiliaria, Estado, Fk_Id_Proyecto) VALUES ('${Manzana}','${Num_Casa}','${Valor_Inicial}','${Ficha_Catastral}','${Escritura}','${Matricula_inmobiliaria}','${Estado}','${Fk_Id_Proyecto}')`, 
-  (err, rows, fields)=>{
-    if (err) throw err;
-    else{
-      res.json({status:'Inmuble agregado'})
+router.post("/", (req, res) => {
+  const {manzana, casa, Valor_Inicial, Valor_Final, catastral, escritura, matricula, estado, idproyecto}= req.body;
+  console.log(req.body)
+  conexion.query(
+    `CALL CrearInmueble('${manzana}', '${casa}', '${Valor_Inicial}', '${Valor_Final}', '${catastral}', '${escritura}', '${matricula}', '${estado}', '${idproyecto}')`,
+    (err, rows, fields) => {
+      console.log(rows)
+      if (!err) {
+        res.json(rows[0]);
+      }
     }
-  })
+  );
 });
 //eliminar 
-router.delete('/:id',(req, res)=>{
-  const{id} = req.params
-  let sql =`delete from inmueble where Id_Inmueble = '${id}'`
-  conexion.query(sql, (err, rows, fields)=>{
-      if(err) throw err
-      else{
-          res.json({status: 'Inmueble eliminado'})
-      }
-  })
+router.delete("/", (req, res) => {
+  const {
+    id
+  } = req.body;
+  conexion.query(`CALL EliminarInmueble('${id}')`, (err, rows, fields) => {
+    if (!err) {
+      res.json(rows[0]);
+    }else{
+      res.json(err);
+    }
+  });
 });
 //modificar
-router.put('/:id',(req, res)=>{
-  const{id}=req.params
-  const {Manzana, Num_Casa, Valor_Inicial, Ficha_Catastral, Escritura, Matricula_inmobiliaria, Estado, Fk_Id_Proyecto}= req.body;
-  let sql = `update inmueble set 
-              Manzana ='${Manzana}',
-              Num_Casa='${Num_Casa}',
-              Valor_Inicial ='${Valor_Inicial}',
-              Ficha_Catastral='${Ficha_Catastral}',
-              Escritura ='${Escritura}',
-              Matricula_inmobiliaria='${Matricula_inmobiliaria}',
-              Estado ='${Estado}',
-              Fk_Id_Proyecto='${Fk_Id_Proyecto}'
-              where Id_Inmueble = '${id}'`  
-  conexion.query(sql, (err, rows, fields)=>{
-      if(err) throw err
-      else{
-          res.json({status: 'Inmueble modificado'})
+router.put("/:id", (req, res) => {
+  const {id} = req.params;
+  const {manzana, casa, Valor_Inicial, Valor_Final, catastral, escritura, matricula, estado, idproyecto}= req.body;
+  let sql = `CALL EditarInmueble('${id}', '${manzana}', '${casa}', '${Valor_Inicial}','${Valor_Final}', '${catastral}', '${escritura}', '${matricula}', '${estado}', '${idproyecto}')`;
+  conexion.query(sql, (err, rows, fields) => {
+    if (!err) {
+      if (!err) {
+        res.json(rows[0]);
       }
-  })
+    }
+  });
 });
-
 module.exports = router;

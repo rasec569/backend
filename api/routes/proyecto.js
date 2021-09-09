@@ -7,8 +7,8 @@ const jwt = require("jsonwebtoken");
 
 // check tocken
 router.use(function (req, res, next) {
-  //Validate users access token on each request to our API.
-  var token = req.headers.authorization.split(" ")[1];
+//Validate users access token on each request to our API.
+var token = req.headers.authorization.split(" ")[1];
   if (token) {
     jwt.verify(token, 'MCG', function (err, decoded) {
       if (err) {
@@ -30,7 +30,6 @@ router.use(function (req, res, next) {
     next();
   }
 });
-
 // Listar Proyectos
 router.get('/', (req,res)=>{
   conexion.query('CALL `ConsultarProyectos`()', (err,rows,fields) => {
@@ -43,25 +42,16 @@ router.get('/', (req,res)=>{
 });
 // Buscar Proyecto
 router.get("/:id", (req, res) => {
-  const {
-    id
-  } = req.params;
+  const { id } = req.params;
   conexion.query(`CALL ConsultarProyecto('${id}')`, (err, rows, fields) => {
     if (!err) {
       res.json(rows[0]);
     }
   });
 });
-
 //crear Proyecto
 router.post("/", (req, res) => {
-
-  const {
-    nombre,
-    ubicacion
-  } =
-  req.body;
-  console.log(req.body)
+  const {nombre, ubicacion} = req.body;
   conexion.query(
     `CALL CrearProyecto('${nombre}', '${ubicacion}')`,
     (err, rows, fields) => {
@@ -72,12 +62,9 @@ router.post("/", (req, res) => {
     }
   );
 });
-
 //eliminar
 router.delete("/", (req, res) => {
-  const {
-    id
-  } = req.body;
+  const {id} = req.body;
   conexion.query(`CALL EliminarProyecto('${id}')`, (err, rows, fields) => {
     if (!err) {
       res.json(rows[0]);
@@ -86,17 +73,10 @@ router.delete("/", (req, res) => {
     }
   });
 });
-
 //modificar
 router.put("/:id", (req, res) => {
-  const {
-    id
-  } = req.params;
-  const {
-    nombre,
-    ubicacion,
-    estado
-  } = req.body;
+  const {id} = req.params;
+  const {nombre, ubicacion, estado} = req.body;
   let sql = `CALL EditarProyecto('${id}', '${nombre}', '${ubicacion}', '${estado}')`;
   conexion.query(sql, (err, rows, fields) => {
     if (!err) {
@@ -106,33 +86,4 @@ router.put("/:id", (req, res) => {
     }
   });
 });
-
-
-/* router.put("/:id", vericarToken, (req, res) => {
-  const { id } = req.params;
-  const { Nombre_Proyecto, Ubicacion_Proyecto } = req.body;
-  let sql = `update proyecto set 
-              Nombre_Proyecto ='${Nombre_Proyecto}',
-              Ubicacion_Proyecto='${Ubicacion_Proyecto}'
-              where Id_Proyecto = '${id}'`;
-  conexion.query(sql, (err, rows, fields) => {
-    if (err) throw err;
-    else {
-      res.json({ status: "Proyecto modificado" });
-    }
-  });
-}); */
-// funcion para vericar Token cada que hace una peticion a la Bd
-function vericarToken(req, res, next) {
-  if (!req.headers.authorization) return res.status(401).json("No autorizado");
-  const token = req.headers.authorization.substr(7);
-  if (token !== "") {
-    const content = jwt.verify(token, "MCG");
-    req.data = content;
-    next();
-  } else {
-    res.status(401).json("Token vacio");
-  }
-}
-
 module.exports = router;

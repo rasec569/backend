@@ -4,7 +4,31 @@ const router= express.Router();
 const conexion = require('../config/conexion');
 // token para las peticiones a mysql
 const jwt = require('jsonwebtoken');
-
+// check tocken
+router.use(function (req, res, next) {
+  //Validate users access token on each request to our API.
+  var token = req.headers.authorization.split(" ")[1];
+  if (token) {
+    jwt.verify(token, 'MCG', function (err, decoded) {
+      if (err) {
+        return res.status(403).send({
+          success: false,
+          message: 'Authorization required.'
+        });
+      } else {
+        const content = jwt.verify(token, 'MCG');
+        req.data = content;
+        next();
+      }
+    });
+  } else {
+    res.status(403).send({
+      success: false,
+      message: 'No token provided.'
+    });
+    next();
+  }
+});
 // Listar usuarios
 router.get('/', (req,res)=>{
   conexion.query('CALL `ConsultarUsuarios`()', (err,rows,fields) => {
@@ -15,75 +39,54 @@ router.get('/', (req,res)=>{
     }
   })
 });
-
-/* router.get('/', (req,res)=>{
-    conexion.query('SELECT * FROM usuario', (err,rows,fields) => {
-      if(!err){
-        res.json(rows);
-      }else{
-        console.log(err);
-      }
-    })
-}); */
 // Buscar usuario con el parametro id que se le pasa en la direccion
-router.get('/:id',(req, res)=>{
-  const{id}=req.params
-  conexion.query('SELECT Id_Usuario, Nombre_Usuario, Apellido_Usuario, Usuario, Celular, email, Fk_Id_Rol as Rol, Fk_Id_Area as Area  FROM  usuario where Id_Usuario=? ',[id],(err, rows, fields)=>{
-      if(!err){
-          res.json(rows);
-        }else{
-          console.log(err);
-        }
-  })
+router.get("/:id", (req, res) => {
+  const {id} = req.params;
+  conexion.query(`CALL ConsultarUsuario('${id}')`, (err, rows, fields) => {
+    if (!err) {
+      res.json(rows[0]);
+    }
+  });
 });
 //crear usuario
-router.post('/', (req,res)=>{
-  const {Nombre_Usuario, Apellido_Usuario, Usuario, password, Celular, email, Rol, Area}= req.body;
-  conexion.query(`INSERT INTO usuario (Nombre_Usuario, Apellido_Usuario, Usuario, Contraseña, Celular, email, Fk_Id_Rol, Fk_Id_Area) VALUES ('${Nombre_Usuario}','${Apellido_Usuario}' ,'${Usuario}','${password}' ,'${Celular}','${email}' ,'${Rol}','${Area}')`,
-  (err, rows, fields)=>{
-    if (err) throw err;
-    else{
-        res.json({status:'Usuario Agregado'})
-        console.log('Usuario Agregado');
+router.post("/", (req, res) => {
+  const {nombres, apellidos, identificacion, telefono, direccion, correo, Usuario, password, IdRol, IdArea}= req.body;
+  conexion.query(`CALL CrearArea('${nombres}', '${apellidos}', '${identificacion}', '${telefono}', '${direccion}', 
+                                  '${correo}', '${Usuario}', '${password}', '${correo}', '${IdRol}', '${IdArea}')`,
+    (err, rows, fields) => {
+      console.log(rows)
+      if (!err) {
+        res.json(rows[0]);
+      }
     }
-  })
-  console.log('Llego al servicio', req.body);
+  );
 });
-
 //eliminar 
-router.delete('/:id',(req, res)=>{
-  const{id} = req.params
-
-  let sql =`delete from usuario where Id_Usuario = '${id}'`
-  conexion.query(sql, (err, rows, fields)=>{
-      if(err) throw err
-      else{
-          res.json({status: 'usuario eliminado'})
-      }
-  })
+router.delete("/", (req, res) => {
+  const { id } = req.body;
+  conexion.query(`CALL EliminarUsuario('${id}')`, (err, rows, fields) => {
+    if (!err) {
+      res.json(rows[0]);
+    }else{
+      res.json(err);
+    }
+  });
 });
-
 //modificar
-router.put('/:id',(req, res)=>{
-  const{id}=req.params
-  const { Nombre_Usuario, Apellido_Usuario, Usuario, Celular, email, Rol, Area}= req.body;
-  let sql = `update usuario set 
-              Nombre_Usuario ='${Nombre_Usuario}',
-              Apellido_Usuario='${Apellido_Usuario}',
-              Usuario ='${Usuario}',
-              Celular ='${Celular}',
-              email='${email}',
-              Fk_Id_Rol ='${Rol}',
-              Fk_Id_Area='${Area}'
-              where Id_Usuario = '${id}'`  
-  conexion.query(sql, (err, rows, fields)=>{
-      if(err) throw err
-      else{
-          res.json({status: 'Usuario modificado'})
+router.put("/:id", (req, res) => {
+  const { id} = req.params;
+  const {nombres, apellidos, identificacion, telefono, direccion, correo, Usuario, password, IdRol, IdArea, estado}= req.body;
+  let sql = `CALL EditarUsuario('${id}', '${nombres}', '${apellidos}', '${identificacion}', '${telefono}', '${direccion}', 
+                                '${correo}', '${Usuario}', '${password}', '${correo}', '${IdRol}', '${IdArea}', '${estado}')`;
+  console.log(sql)
+  conexion.query(sql, (err, rows, fields) => {
+    if (!err) {
+      if (!err) {
+        res.json(rows[0]);
       }
-  })
+    }
+  });
 });
-
 //validar usuario
 router.post('/signin', (req,res) => {
     const { Usuario, password } = req.body;
@@ -108,23 +111,5 @@ router.post('/signin', (req,res) => {
     
     )
 });
-router.post('/test', vericarToken, (req,res)=>{
-    console.log(req.data);
-    res.json('Inf secrect');
-});
-
-function vericarToken(req,res,next){
-    if(!req.headers.authorization) return res.status(401).json('No autorizado');
-    const token = req.headers.authorization.substr(7);
-    if(token!==''){
-        const content= jwt.verify(token,'MCG');
-        req.data=content;
-        next();
-    }else{
-        res.status(401).json('Token vacio');
-    }
-    /* console.log(token); */
-}
-
   
 module.exports = router;

@@ -5,76 +5,88 @@ const conexion = require('../config/conexion');
 // token para las peticiones a mysql
 const jwt = require('jsonwebtoken');
 
+// check tocken
+router.use(function (req, res, next) {
+  //Validate users access token on each request to our API.
+  var token = req.headers.authorization.split(" ")[1];
+  if (token) {
+    jwt.verify(token, 'MCG', function (err, decoded) {
+      if (err) {
+        return res.status(403).send({
+          success: false,
+          message: 'Authorization required.'
+        });
+      } else {
+        const content = jwt.verify(token, 'MCG');
+        req.data = content;
+        next();
+      }
+    });
+  } else {
+    res.status(403).send({
+      success: false,
+      message: 'No token provided.'
+    });
+    next();
+  }
+});
+
 // Listar roles
 router.get('/', (req,res)=>{
   conexion.query('CALL `ConsultarRoles`()', (err,rows,fields) => {
     if(!err){
-      res.json(rows);
+      res.json(rows[0]);
     }else{
       console.log(err);
     }
   })
 });
 
-/* router.get('/', (req,res)=>{
-    conexion.query('SELECT * FROM rol', (err,rows,fields) => {
-      if(!err){
-        res.json(rows);
-        console.log(res);
-      }else{
-        console.log(err);
-      }
-    })
-}); */
-// Buscar rol con el parametro id que se le pasa en la direccion
-router.get('/:id',(req, res)=>{
-  const{id}=req.params
-  conexion.query('SELECT * FROM  rol where Id_Rol=? ',[id],(err, rows, fields)=>{
-      if(!err){
-          res.json(rows);
-        }else{
-          console.log(err);
-        }
-  })
-});
-//crear rol
-router.post('/', (req,res)=>{
-  const { Nombre_Rol, Descripcion}= req.body;
-  conexion.query(`INSERT INTO rol (Nombre_Rol, Descripcion) VALUES ('${Nombre_Rol}','${Descripcion}')`,
-  (err, rows, fields)=>{
-    if (err) throw err;
-    else{
-        res.json({status:'Rol Agregado'})
-        console.log('Rol Agregado');
+router.get("/:id", (req, res) => {
+  const { id } = req.params;
+  conexion.query(`CALL ConsultarRol('${id}')`, (err, rows, fields) => {
+    if (!err) {
+      res.json(rows[0]);
     }
-  })
+  });
+});
+
+
+//crear rol
+router.post("/", (req, res) => {
+  const {nombre, descripcion} =  req.body;
+  conexion.query(
+    `CALL CrearRol('${nombre}', '${descripcion}')`,
+    (err, rows, fields) => {
+      console.log(rows)
+      if (!err) {
+        res.json(rows[0]);
+      }
+    }
+  );
 });
 //eliminar 
-router.delete('/:id',(req, res)=>{
-  const{id} = req.params
-  let sql =`delete from rol where Id_Rol = '${id}'`
-  conexion.query(sql, (err, rows, fields)=>{
-      if(err) throw err
-      else{
-          res.json({status: 'Rol eliminado'})
-      }
-  })
+router.delete("/", (req, res) => {
+  const {id} = req.body;
+  conexion.query(`CALL EliminarRol('${id}')`, (err, rows, fields) => {
+    if (!err) {
+      res.json(rows[0]);
+    }else{
+      res.json(err);
+    }
+  });
 });
 //modificar
-router.put('/:id',(req, res)=>{
-  const{id}=req.params
-  const { Nombre_Rol, Descripcion}= req.body;
-  let sql = `update rol set 
-              Nombre_Rol ='${Nombre_Rol}',
-              Descripcion='${Descripcion}'
-              where Id_Rol = '${id}'`  
-  conexion.query(sql, (err, rows, fields)=>{
-      if(err) throw err
-      else{
-          res.json({status: 'Rol modificado'})
+router.put("/:id", (req, res) => {
+  const {id} = req.params;
+  const {nombre, descripcion} = req.body;
+  let sql = `CALL EditarRol('${id}', '${nombre}','${descripcion}')`;
+  conexion.query(sql, (err, rows, fields) => {
+    if (!err) {
+      if (!err) {
+        res.json(rows[0]);
       }
-  })
+    }
+  });
 });
-
-
 module.exports = router;
