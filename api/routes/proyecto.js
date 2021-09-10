@@ -55,7 +55,6 @@ router.post("/", (req, res) => {
   conexion.query(
     `CALL CrearProyecto('${nombre}', '${ubicacion}')`,
     (err, rows, fields) => {
-      console.log(rows)
       if (!err) {
         res.json(rows[0]);
       }

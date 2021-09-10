@@ -54,7 +54,6 @@ router.post("/", (req, res) => {
   conexion.query(
     `CALL CrearArea('${nombre}', '${descripcion}')`,
     (err, rows, fields) => {
-      console.log(rows)
       if (!err) {
         res.json(rows[0]);
       }

@@ -77,7 +77,7 @@ router.put("/:id", (req, res) => {
   const { id} = req.params;
   const {nombres, apellidos, identificacion, telefono, direccion, correo, Usuario, password, IdRol, IdArea, estado}= req.body;
   let sql = `CALL EditarUsuario('${id}', '${nombres}', '${apellidos}', '${identificacion}', '${telefono}', '${direccion}', 
-                                '${correo}', '${Usuario}', '${password}', '${correo}', '${IdRol}', '${IdArea}', '${estado}')`;
+                                '${correo}', '${Usuario}', '${password}', '${IdRol}', '${IdArea}', '${estado}')`;
   console.log(sql)
   conexion.query(sql, (err, rows, fields) => {
     if (!err) {
@@ -95,7 +95,7 @@ router.post('/signin', (req,res) => {
     [Usuario, password ], 
     (err, rows, fields)=>{
         if(!err){
-            console.log(rows);
+            /* console.log(rows); */
             if(rows.length>0){                
                 let data=JSON.stringify(rows[0]);
                 //genera el token y la palabra secrecta

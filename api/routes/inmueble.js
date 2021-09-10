@@ -36,7 +36,7 @@ router.use(function (req, res, next) {
 router.get('/', (req,res)=>{
   conexion.query('CALL `ConsultarInmuebles`()', (err,rows,fields) => {
     if(!err){
-      res.json(rows);
+      res.json(rows[0]);
     }else{
       console.log(err);
     }
@@ -62,23 +62,19 @@ router.get('/:id', (req,res)=>{
 });
 //crear
 router.post("/", (req, res) => {
-  const {manzana, casa, Valor_Inicial, Valor_Final, catastral, escritura, matricula, estado, idproyecto}= req.body;
-  console.log(req.body)
+  const {manzana, casa, Valor_Inicial, Valor_Final, catastral, escritura, matricula, estado, idproyecto}= req.body;    
   conexion.query(
     `CALL CrearInmueble('${manzana}', '${casa}', '${Valor_Inicial}', '${Valor_Final}', '${catastral}', '${escritura}', '${matricula}', '${estado}', '${idproyecto}')`,
-    (err, rows, fields) => {
-      console.log(rows)
+    (err, rows, fields) => {      
       if (!err) {
         res.json(rows[0]);
       }
-    }
+    }    
   );
 });
 //eliminar 
 router.delete("/", (req, res) => {
-  const {
-    id
-  } = req.body;
+  const { id } = req.body;
   conexion.query(`CALL EliminarInmueble('${id}')`, (err, rows, fields) => {
     if (!err) {
       res.json(rows[0]);
