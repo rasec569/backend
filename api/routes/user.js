@@ -50,13 +50,15 @@ router.get("/:id", (req, res) => {
 });
 //crear usuario
 router.post("/", (req, res) => {
-  const {nombres, apellidos, identificacion, telefono, direccion, correo, Usuario, password, IdRol, IdArea}= req.body;
-  conexion.query(`CALL CrearArea('${nombres}', '${apellidos}', '${identificacion}', '${telefono}', '${direccion}', 
-                                  '${correo}', '${Usuario}', '${password}', '${correo}', '${IdRol}', '${IdArea}')`,
+  const {nombres, apellidos, identificacion, telefono, direccion, correo, nick, password, IdRol, IdArea}= req.body;
+  conexion.query(`CALL CrearUsuario('${nombres}', '${apellidos}', '${identificacion}', '${telefono}', '${direccion}', '${correo}', '${nick}', '${password}', '${IdRol}', '${IdArea}')`,
     (err, rows, fields) => {
-      console.log(rows)
+      /* console.log(rows) */
       if (!err) {
         res.json(rows[0]);
+      }else{
+        res.json(err);
+        console.log(err)
       }
     }
   );
@@ -75,10 +77,10 @@ router.delete("/", (req, res) => {
 //modificar
 router.put("/:id", (req, res) => {
   const { id} = req.params;
-  const {nombres, apellidos, identificacion, telefono, direccion, correo, Usuario, password, IdRol, IdArea, estado}= req.body;
+  const {nombres, apellidos, identificacion, telefono, direccion, correo, nick, password, IdRol, IdArea}= req.body;
   let sql = `CALL EditarUsuario('${id}', '${nombres}', '${apellidos}', '${identificacion}', '${telefono}', '${direccion}', 
-                                '${correo}', '${Usuario}', '${password}', '${IdRol}', '${IdArea}', '${estado}')`;
-  console.log(sql)
+                                '${correo}', '${nick}', '${password}', '${IdRol}', '${IdArea}')`;
+  /* console.log(sql) */
   conexion.query(sql, (err, rows, fields) => {
     if (!err) {
       if (!err) {
