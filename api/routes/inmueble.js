@@ -62,10 +62,10 @@ router.get('/:id', (req,res)=>{
 });
 //crear
 router.post("/", (req, res) => {
-  const {manzana, casa, Valor_Inicial, Valor_Final, catastral, escritura, matricula, estado, idproyecto}= req.body;    
-  conexion.query(
-    `CALL CrearInmueble('${manzana}', '${casa}', '${Valor_Inicial}', '${Valor_Final}', '${catastral}', '${escritura}', '${matricula}', '${estado}', '${idproyecto}')`,
-    (err, rows, fields) => {      
+  const {manzana, casa, Valor_Inicial, Valor_Final, catastral, escritura, matricula, estado, idproyecto, idetapa}= req.body;    
+  let sql = `CALL CrearInmueble('${manzana}', '${casa}', '${Valor_Inicial}', '${Valor_Final}', '${catastral}', '${escritura}', '${matricula}', '${estado}', '${idproyecto}','${idetapa}')`
+  console.log(sql)
+  conexion.query(sql,(err, rows, fields) => {      
       if (!err) {
         res.json(rows[0]);
       }
@@ -86,8 +86,9 @@ router.delete("/", (req, res) => {
 //modificar
 router.put("/:id", (req, res) => {
   const {id} = req.params;
-  const {manzana, casa, Valor_Inicial, Valor_Final, catastral, escritura, matricula, estado, idproyecto}= req.body;
-  let sql = `CALL EditarInmueble('${id}', '${manzana}', '${casa}', '${Valor_Inicial}','${Valor_Final}', '${catastral}', '${escritura}', '${matricula}', '${estado}', '${idproyecto}')`;
+  const {manzana, casa, Valor_Inicial, Valor_Final, catastral, escritura, matricula, estado, idproyecto, idetapa}= req.body;
+  let sql = `CALL EditarInmueble('${id}', '${manzana}', '${casa}', '${Valor_Inicial}','${Valor_Final}', '${catastral}', '${escritura}', '${matricula}', '${estado}', '${idproyecto}','${idetapa}')`;
+  console.log(sql)
   conexion.query(sql, (err, rows, fields) => {
     if (!err) {
       if (!err) {

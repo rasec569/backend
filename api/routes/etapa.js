@@ -30,12 +30,16 @@ router.use(function (req, res, next) {
     next();
   }
 });
-// Buscar Etapas del Proyecto
-router.get("/:id", (req, res) => {
+// listar Etapas del Proyecto
+router.get("/proyecto/:id", (req, res) => {
     const { id } = req.params;
-    conexion.query(`CALL ConsultarEtapa('${id}')`, (err, rows, fields) => {
+    conexion.query(`CALL ConsultarEtapasProyecto('${id}')`, (err, rows, fields) => {
       if (!err) {
-        res.json(rows[0]);
+        res.json(rows[0]);       
+      }
+      else{
+        console.log(" error en el backend",err);
       }
     });
   });
+  module.exports = router;

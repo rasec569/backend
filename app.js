@@ -13,8 +13,10 @@ const clientsRoute = require('./api/routes/clients');
 const rolRoute =require('./api/routes/rol');
 const areaRoute =require('./api/routes/area');
 const proyectoRoute= require('./api/routes/proyecto');
-const inmuebleRoute= require('./api/routes/inmueble')
+const inmuebleRoute= require('./api/routes/inmueble');
+const etapaRoute= require('./api/routes/etapa');
 
+app.use('/etapa',etapaRoute);
 app.use('/user',userRoute);
 app.use('/rol', rolRoute);
 app.use('/area',areaRoute);

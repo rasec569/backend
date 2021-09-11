@@ -51,10 +51,10 @@ router.get("/:id", (req, res) => {
 });
 //crear Proyecto
 router.post("/", (req, res) => {
-  const {nombre, ubicacion} = req.body;
-  conexion.query(
-    `CALL CrearProyecto('${nombre}', '${ubicacion}')`,
-    (err, rows, fields) => {
+  const {nombre, ubicacion, estado,num_etapa,estado_etapa,manzanas} = req.body;
+  let sql = `CALL CrearProyecto('${nombre}', '${ubicacion}','${estado}','${num_etapa}', '${estado_etapa}', '${manzanas}')`
+  console.log(sql)
+  conexion.query(sql,(err, rows, fields) => {
       if (!err) {
         res.json(rows[0]);
       }
