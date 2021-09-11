@@ -42,4 +42,50 @@ router.get("/proyecto/:id", (req, res) => {
       }
     });
   });
+  // Buscar etapa
+  router.get("/:id", (req, res) => {
+  const { id } = req.params;
+  conexion.query(`CALL ConsultarEtapa('${id}')`, (err, rows, fields) => {
+    if (!err) {
+      res.json(rows[0]);
+    }
+  });
+});
+//crear Proyecto
+  router.post("/", (req, res) => {
+  const {num_etapa,estado_etapa,manzanas,idproyecto} = req.body;
+  let sql = `CALL CrearEtapa('${num_etapa}', '${estado_etapa}', '${manzanas}', '${idproyecto}')`
+  console.log(sql)
+  conexion.query(sql,(err, rows, fields) => {
+      if (!err) {
+        res.json(rows[0]);
+      }
+    }
+  );
+});
+//eliminar
+router.delete("/", (req, res) => {
+  const {id} = req.body;
+  conexion.query(`CALL EliminarEtapa('${id}')`, (err, rows, fields) => {
+    if (!err) {
+      res.json(rows[0]);
+    }else{
+      res.json(err);
+    }
+  });
+});
+//modificar
+router.put("/:id", (req, res) => {
+  const {id} = req.params;
+  const {num_etapa,estado_etapa,manzanas} = req.body;
+  let sql = `CALL EditarEtapa('${id}', '${num_etapa}', '${estado_etapa}', '${manzanas}')`;
+  conexion.query(sql, (err, rows, fields) => {
+    if (!err) {
+      if (!err) {
+        res.json(rows[0]);
+      }
+    }
+  });
+});
+
   module.exports = router;
