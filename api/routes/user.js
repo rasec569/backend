@@ -5,7 +5,7 @@ const conexion = require('../config/conexion');
 // token para las peticiones a mysql
 const jwt = require('jsonwebtoken');
 // check tocken
-router.use(function (req, res, next) {
+/*router.use(function (req, res, next) {
   //Validate users access token on each request to our API.
   var token = req.headers.authorization.split(" ")[1];
   if (token) {
@@ -28,7 +28,7 @@ router.use(function (req, res, next) {
     });
     next();
   }
-});
+});*/
 // Listar usuarios
 router.get('/', (req,res)=>{
   conexion.query('CALL `ConsultarUsuarios`()', (err,rows,fields) => {
