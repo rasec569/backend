@@ -31,9 +31,9 @@ router.use(function (req, res, next) {
   }
 });
 // listar Etapas del Proyecto
-router.get("/proyecto/:id", (req, res) => {
+router.get("/inmueble/:id", (req, res) => {
     const { id } = req.params;
-    conexion.query(`CALL ConsultarEtapasProyecto('${id}')`, (err, rows, fields) => {
+    conexion.query(`CALL ConsultarAdicionalesInmueble('${id}')`, (err, rows, fields) => {
       if (!err) {
         res.json(rows[0]);       
       }
@@ -45,9 +45,7 @@ router.get("/proyecto/:id", (req, res) => {
   // Buscar etapa
   router.get("/:id", (req, res) => {
   const { id } = req.params;
-  let sql = `CALL ConsultarEtapa('${id}')`
-  console.log(sql)
-  conexion.query(sql, (err, rows, fields) => {
+  conexion.query(`CALL ConsultarAdicional('${id}')`, (err, rows, fields) => {
     if (!err) {
       res.json(rows[0]);
     }
@@ -55,8 +53,9 @@ router.get("/proyecto/:id", (req, res) => {
 });
 //crear Proyecto
   router.post("/", (req, res) => {
-  const {numero,estado,manzanas,idproyecto} = req.body;
-  let sql = `CALL CrearEtapa('${numero}', '${estado}', '${manzanas}', '${idproyecto}')`
+  const {num_etapa,estado_etapa,manzanas,idproyecto} = req.body;
+  let sql = `CALL CrearAdicional('${num_etapa}', '${estado_etapa}', '${manzanas}', '${idproyecto}')`
+  console.log(sql)
   conexion.query(sql,(err, rows, fields) => {
       if (!err) {
         res.json(rows[0]);
@@ -78,9 +77,8 @@ router.delete("/", (req, res) => {
 //modificar
 router.put("/:id", (req, res) => {
   const {id} = req.params;
-  const {numero,estado,manzanas} = req.body;
-  let sql = `CALL EditarEtapa('${id}', '${numero}', '${estado}', '${manzanas}')`;
-  console.log(sql)
+  const {num_etapa,estado_etapa,manzanas} = req.body;
+  let sql = `CALL EditarEtapa('${id}', '${num_etapa}', '${estado_etapa}', '${manzanas}')`;
   conexion.query(sql, (err, rows, fields) => {
     if (!err) {
       if (!err) {
