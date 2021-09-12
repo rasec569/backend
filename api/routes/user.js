@@ -5,7 +5,7 @@ const conexion = require('../config/conexion');
 // token para las peticiones a mysql
 const jwt = require('jsonwebtoken');
 // check tocken
-/*router.use(function (req, res, next) {
+router.use(function (req, res, next) {
   //Validate users access token on each request to our API.
   var token = req.headers.authorization.split(" ")[1];
   if (token) {
@@ -28,7 +28,7 @@ const jwt = require('jsonwebtoken');
     });
     next();
   }
-});*/
+});
 // Listar usuarios
 router.get('/', (req,res)=>{
   conexion.query('CALL `ConsultarUsuarios`()', (err,rows,fields) => {
@@ -88,30 +88,6 @@ router.put("/:id", (req, res) => {
       }
     }
   });
-});
-//validar usuario
-router.post('/signin', (req,res) => {
-    const { Usuario, password } = req.body;
-    /* console.log(req.body); */
-    conexion.query('SELECT Usuario, Fk_Id_Rol  FROM  usuario where Usuario=? and Contraseña=?', 
-    [Usuario, password ], 
-    (err, rows, fields)=>{
-        if(!err){
-            /* console.log(rows); */
-            if(rows.length>0){                
-                let data=JSON.stringify(rows[0]);
-                //genera el token y la palabra secrecta
-                const token= jwt.sign(data,'MCG');
-                res.json({token});
-            }else{
-                res.json('Usuario o contraseña incorrectos');                
-            }
-          }else{
-            console.log(err);
-          }
-    }
-    
-    )
 });
   
 module.exports = router;

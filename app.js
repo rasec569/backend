@@ -9,6 +9,7 @@ app.use(cors());
 
 //Routes
 const userRoute = require('./api/routes/user');
+const loginRoute = require('./api/routes/login');
 const clientsRoute = require('./api/routes/clients');
 const rolRoute =require('./api/routes/rol');
 const areaRoute =require('./api/routes/area');
@@ -18,6 +19,7 @@ const etapaRoute= require('./api/routes/etapa');
 const adicionalRoute= require('./api/routes/adicional');
 
 app.use('/user',userRoute);
+app.use('/login',loginRoute);
 app.use('/area',areaRoute);
 app.use('/rol', rolRoute);
 app.use('/proyecto', proyectoRoute);
