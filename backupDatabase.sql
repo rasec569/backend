@@ -87,6 +87,24 @@ CREATE TABLE IF NOT EXISTS `aportes` (
 /*!40000 ALTER TABLE `aportes` DISABLE KEYS */;
 /*!40000 ALTER TABLE `aportes` ENABLE KEYS */;
 
+-- Volcando estructura para tabla mcgdb.archivo
+CREATE TABLE IF NOT EXISTS `archivo` (
+  `idArchivo` int NOT NULL,
+  `nombreReal` varchar(550) NOT NULL DEFAULT '',
+  `nombreDerivado` varchar(550) NOT NULL DEFAULT '',
+  `rutaRelativa` varchar(1550) NOT NULL DEFAULT '',
+  `estadoArchivo` enum('Y','N') DEFAULT 'Y',
+  `fechaCreacion` datetime NOT NULL,
+  `fechaModificacion` datetime NOT NULL,
+  PRIMARY KEY (`idArchivo`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+
+-- Volcando datos para la tabla mcgdb.archivo: ~0 rows (aproximadamente)
+/*!40000 ALTER TABLE `archivo` DISABLE KEYS */;
+INSERT INTO `archivo` (`idArchivo`, `nombreReal`, `nombreDerivado`, `rutaRelativa`, `estadoArchivo`, `fechaCreacion`, `fechaModificacion`) VALUES
+	(1, 'file.png', 'xxxxxxxxxxxxxxx.png', 'archivos/xxxxxxx.png', 'N', '2021-09-15 21:57:17', '2021-09-15 21:57:17');
+/*!40000 ALTER TABLE `archivo` ENABLE KEYS */;
+
 -- Volcando estructura para tabla mcgdb.area
 CREATE TABLE IF NOT EXISTS `area` (
   `Id_Area` int NOT NULL AUTO_INCREMENT,
@@ -96,7 +114,7 @@ CREATE TABLE IF NOT EXISTS `area` (
   PRIMARY KEY (`Id_Area`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb3;
 
--- Volcando datos para la tabla mcgdb.area: ~3 rows (aproximadamente)
+-- Volcando datos para la tabla mcgdb.area: ~2 rows (aproximadamente)
 /*!40000 ALTER TABLE `area` DISABLE KEYS */;
 INSERT INTO `area` (`Id_Area`, `Nom_Area`, `Desc_Area`, `Estado`) VALUES
 	(1, 'Desarrollo', 'programadores de la app web', 'Y'),
@@ -117,7 +135,7 @@ CREATE TABLE IF NOT EXISTS `cartera` (
   CONSTRAINT `fk_cartera_cliente1` FOREIGN KEY (`Fk_Id_Cliente`) REFERENCES `cliente` (`Id_Cliente`)
 ) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb3;
 
--- Volcando datos para la tabla mcgdb.cartera: ~7 rows (aproximadamente)
+-- Volcando datos para la tabla mcgdb.cartera: ~6 rows (aproximadamente)
 /*!40000 ALTER TABLE `cartera` DISABLE KEYS */;
 INSERT INTO `cartera` (`Id_Cartera`, `Estado_Cartera`, `Valor_Recaudado`, `Saldo`, `Total_Cartera`, `Fk_Id_Cliente`) VALUES
 	(3, 'Y', 0, 0, 0, 3),
@@ -156,7 +174,7 @@ CREATE TABLE IF NOT EXISTS `cliente` (
   CONSTRAINT `FKCliente_Persona` FOREIGN KEY (`id_persona`) REFERENCES `persona` (`id_persona`)
 ) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb3;
 
--- Volcando datos para la tabla mcgdb.cliente: ~9 rows (aproximadamente)
+-- Volcando datos para la tabla mcgdb.cliente: ~8 rows (aproximadamente)
 /*!40000 ALTER TABLE `cliente` DISABLE KEYS */;
 INSERT INTO `cliente` (`Id_Cliente`, `Fecha_Creacion`, `Fecha_Modificacion`, `Estado`, `id_persona`) VALUES
 	(1, '2021-08-29 22:04:19', '2021-08-29 22:04:22', 'Y', 1),
@@ -183,7 +201,7 @@ CREATE TABLE IF NOT EXISTS `cliente_contrato` (
   CONSTRAINT `fk_cliente_has_contrato_venta_contrato_venta1` FOREIGN KEY (`Pfk_Id_Contrato`) REFERENCES `contrato_venta` (`Id_Contrato`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
--- Volcando datos para la tabla mcgdb.cliente_contrato: ~1 rows (aproximadamente)
+-- Volcando datos para la tabla mcgdb.cliente_contrato: ~0 rows (aproximadamente)
 /*!40000 ALTER TABLE `cliente_contrato` DISABLE KEYS */;
 INSERT INTO `cliente_contrato` (`Pfk_Id_Cliente`, `Pfk_Id_Contrato`, `Fecha_Cambio`, `Estado`) VALUES
 	(1, 1, '2021-09-11', 'Y');
@@ -204,7 +222,7 @@ CREATE TABLE IF NOT EXISTS `contrato_venta` (
   CONSTRAINT `fk_Contrato_Inmueble1` FOREIGN KEY (`Fk_Id_Inmueble`) REFERENCES `inmueble` (`Id_Inmueble`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb3;
 
--- Volcando datos para la tabla mcgdb.contrato_venta: ~1 rows (aproximadamente)
+-- Volcando datos para la tabla mcgdb.contrato_venta: ~0 rows (aproximadamente)
 /*!40000 ALTER TABLE `contrato_venta` DISABLE KEYS */;
 INSERT INTO `contrato_venta` (`Id_Contrato`, `Numero_Contrato`, `Forma_Pago`, `Valor_Contrato`, `Fecha_Venta`, `Observacion_Contrato`, `Fk_Id_Inmueble`) VALUES
 	(1, '1111111', 'none', 1123434, '2021-09-11', 'none observacion', 1);
@@ -439,7 +457,7 @@ CREATE TABLE IF NOT EXISTS `proyecto` (
   PRIMARY KEY (`Id_Proyecto`)
 ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb3;
 
--- Volcando datos para la tabla mcgdb.proyecto: ~4 rows (aproximadamente)
+-- Volcando datos para la tabla mcgdb.proyecto: ~3 rows (aproximadamente)
 /*!40000 ALTER TABLE `proyecto` DISABLE KEYS */;
 INSERT INTO `proyecto` (`Id_Proyecto`, `Nombre_Proyecto`, `Ubicacion_Proyecto`, `Estado_Proyecto`, `Fecha_Modificacion`) VALUES
 	(1, 'Punta del este', 'Via  a morelia detras de las casa fiscales ejercito', 'En Venta', '2021-09-11 00:29:41'),
@@ -556,6 +574,32 @@ BEGIN
 	START TRANSACTION;
 		SELECT adicional.Id_Adicional AS id, adicional.Concepto, adicional.Valor_Adicional AS valor, adicional.Estado_Adicional AS estado, 
 				adicional.Fecha_Adicional AS fecha FROM adicional WHERE adicional.Fk_Id_Inmueble=inmuebleId;
+	COMMIT;
+END//
+DELIMITER ;
+
+-- Volcando estructura para procedimiento mcgdb.ConsultarArchivos
+DELIMITER //
+CREATE PROCEDURE `ConsultarArchivos`()
+    COMMENT 'Procedimiento para consultar todos los archivos guardados'
+BEGIN
+	DECLARE exit handler for sqlexception
+  		BEGIN
+    		CALL `SHOW_MENSAJE`('1', 'Error, por el momento el sistema está teniendo problemas para realizar la operación solicitada. Tome una foto o captura de pantalla y contáctese con soporte, disculpe las molestias.');
+  		ROLLBACK;
+	END;
+
+	DECLARE exit handler for sqlwarning
+ 		BEGIN
+   	 	CALL `SHOW_MENSAJE`('2', 'Se ha producido un evento inesperado, por favor contáctar con soporte.');
+ 		ROLLBACK;
+	END;
+
+	START TRANSACTION;
+		SELECT archivo.idArchivo AS id,archivo.nombreReal AS nombre, archivo.rutaRelativa AS ruta,
+		archivo.fechaCreacion fechaCreacion FROM archivo
+		WHERE archivo.estadoArchivo='Y'
+		ORDER BY archivo.idArchivo;
 	COMMIT;
 END//
 DELIMITER ;
@@ -1105,6 +1149,39 @@ DECLARE exit handler for sqlexception
 						adicional.Fecha_Adicional, adicional.Fk_Id_Inmueble) 
 		VALUES (@IDADIC+1, Concepto, Valor_Adicional, 'Y', Fecha_Adicional, Id_Inmueble);
 		CALL `SHOW_MENSAJE`('3', 'Registro exitoso, el adicional fué creado de forma exitosa.');
+	COMMIT;
+END//
+DELIMITER ;
+
+-- Volcando estructura para procedimiento mcgdb.CrearArchivo
+DELIMITER //
+CREATE PROCEDURE `CrearArchivo`(
+	IN `nombreReal` VARCHAR(550),
+	IN `nombreDerivado` VARCHAR(550),
+	IN `rutaRelativa` VARCHAR(550)
+)
+    COMMENT 'Procedimiento para crear un archivo'
+BEGIN
+	DECLARE exit handler for sqlexception
+  		BEGIN
+    		CALL `SHOW_MENSAJE`('1', 'Error, por el momento el sistema está teniendo problemas para realizar la operación solicitada. Tome una foto o captura de pantalla y contáctese con soporte, disculpe las molestias.');
+  		ROLLBACK;
+	END;
+
+	DECLARE exit handler for sqlwarning
+ 		BEGIN
+   	 	CALL `SHOW_MENSAJE`('2', 'Se ha producido un evento inesperado, por favor contáctar con soporte.');
+ 		ROLLBACK;
+	END;
+
+	START TRANSACTION;
+		SET @IDARC=(SELECT IFNULL(MAX(archivo.idArchivo),0) FROM archivo);		
+		
+		INSERT INTO archivo
+		(archivo.idArchivo,archivo.nombreReal,archivo.nombreDerivado,archivo.rutaRelativa,archivo.fechaCreacion,archivo.fechaModificacion)
+		VALUES (@IDARC+1,nombreReal,nombreDerivado,rutaRelativa,NOW(),NOW());
+		
+		CALL `SHOW_MENSAJE`('2', 'Se ha registrado de forma exitosa elarchivo');
 	COMMIT;
 END//
 DELIMITER ;
@@ -1731,6 +1808,35 @@ BEGIN
 		WHERE persona.id_persona=@IDUSER;
 
 		CALL `SHOW_MENSAJE`('3', 'Datos del usuario modificados de forma exitosa!');
+	COMMIT;
+END//
+DELIMITER ;
+
+-- Volcando estructura para procedimiento mcgdb.EliminarArchivo
+DELIMITER //
+CREATE PROCEDURE `EliminarArchivo`(
+	IN `ID` INT
+)
+    COMMENT 'Procedimiento para eliminar un archivo del sistema de forma lógica'
+BEGIN
+	DECLARE exit handler for sqlexception
+  		BEGIN
+    		CALL `SHOW_MENSAJE`('1', 'Error, por el momento el sistema está teniendo problemas para realizar la operación solicitada. Tome una foto o captura de pantalla y contáctese con soporte, disculpe las molestias.');
+  		ROLLBACK;
+	END;
+
+	DECLARE exit handler for sqlwarning
+ 		BEGIN
+   	 	CALL `SHOW_MENSAJE`('2', 'Se ha producido un evento inesperado, por favor contáctar con soporte.');
+ 		ROLLBACK;
+	END;
+	START TRANSACTION;
+		IF((SELECT archivo.estadoArchivo FROM archivo WHERE archivo.idArchivo=ID)= 'Y') THEN
+			UPDATE archivo SET archivo.estadoArchivo="N" WHERE archivo.idArchivo=ID;
+			CALL `SHOW_MENSAJE`('3', 'Archivo eliminado con éxito.');
+		ELSE
+			CALL `SHOW_MENSAJE`('1', 'Lo sentimos, ya fué eliminado o no existe.');
+		END IF;
 	COMMIT;
 END//
 DELIMITER ;
