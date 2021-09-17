@@ -92,17 +92,20 @@ CREATE TABLE IF NOT EXISTS `archivo` (
   `idArchivo` int NOT NULL,
   `nombreReal` varchar(550) NOT NULL DEFAULT '',
   `nombreDerivado` varchar(550) NOT NULL DEFAULT '',
-  `rutaRelativa` varchar(1550) NOT NULL DEFAULT '',
+  `rutaRelativa` text CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
   `estadoArchivo` enum('Y','N') DEFAULT 'Y',
   `fechaCreacion` datetime NOT NULL,
   `fechaModificacion` datetime NOT NULL,
   PRIMARY KEY (`idArchivo`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
--- Volcando datos para la tabla mcgdb.archivo: ~0 rows (aproximadamente)
+-- Volcando datos para la tabla mcgdb.archivo: ~4 rows (aproximadamente)
 /*!40000 ALTER TABLE `archivo` DISABLE KEYS */;
 INSERT INTO `archivo` (`idArchivo`, `nombreReal`, `nombreDerivado`, `rutaRelativa`, `estadoArchivo`, `fechaCreacion`, `fechaModificacion`) VALUES
-	(1, 'file.png', 'xxxxxxxxxxxxxxx.png', 'archivos/xxxxxxx.png', 'N', '2021-09-15 21:57:17', '2021-09-15 21:57:17');
+	(1, 'NoImage.png', 'B2x6Y_zvYYQXVjJO_GelTjUv.png', 'uploads/B2x6Y_zvYYQXVjJO_GelTjUv.png', 'Y', '2021-09-16 00:00:07', '2021-09-16 00:00:07'),
+	(2, 'NoImage.png', 'L1v_2DvoKWGgOh8hQptMBoxy.png', 'uploads/L1v_2DvoKWGgOh8hQptMBoxy.png', 'Y', '2021-09-16 00:10:08', '2021-09-16 00:10:08'),
+	(3, 'Modelo Bd Cartera correccion .png', '4tUTtLAPX3-GsqCBVHBmNBhN.png', 'uploads/4tUTtLAPX3-GsqCBVHBmNBhN.png', 'Y', '2021-09-16 00:10:57', '2021-09-16 00:10:57'),
+	(4, '50 SOMBRAS DE GREY-poster.jpg', '5exmvEOQTqwIwL8yytMm3FIH.jpg', 'uploads/5exmvEOQTqwIwL8yytMm3FIH.jpg', 'Y', '2021-09-16 00:11:05', '2021-09-16 00:11:05');
 /*!40000 ALTER TABLE `archivo` ENABLE KEYS */;
 
 -- Volcando estructura para tabla mcgdb.area
@@ -1181,7 +1184,7 @@ BEGIN
 		(archivo.idArchivo,archivo.nombreReal,archivo.nombreDerivado,archivo.rutaRelativa,archivo.fechaCreacion,archivo.fechaModificacion)
 		VALUES (@IDARC+1,nombreReal,nombreDerivado,rutaRelativa,NOW(),NOW());
 		
-		CALL `SHOW_MENSAJE`('2', 'Se ha registrado de forma exitosa elarchivo');
+		CALL `SHOW_MENSAJE`('2', 'Se ha registrado de forma exitosa el archivo');
 	COMMIT;
 END//
 DELIMITER ;
