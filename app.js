@@ -6,10 +6,12 @@ const cors = require('cors');
 app.use(bodyParser.urlencoded({extended:false}));
 app.use(bodyParser.json());
 app.use(cors());
-
+app.use(express.static('uploads'));
+app.use('/uploads', express.static('uploads'));
 //Routes
 const userRoute = require('./api/routes/user');
 const loginRoute = require('./api/routes/login');
+const archivoRoute = require('./api/routes/archivo');
 const clientsRoute = require('./api/routes/clients');
 const rolRoute =require('./api/routes/rol');
 const areaRoute =require('./api/routes/area');
@@ -20,6 +22,7 @@ const adicionalRoute= require('./api/routes/adicional');
 
 app.use('/user',userRoute);
 app.use('/login',loginRoute);
+app.use('/archivo',archivoRoute);
 app.use('/area',areaRoute);
 app.use('/rol', rolRoute);
 app.use('/proyecto', proyectoRoute);
