@@ -87,6 +87,27 @@ CREATE TABLE IF NOT EXISTS `aportes` (
 /*!40000 ALTER TABLE `aportes` DISABLE KEYS */;
 /*!40000 ALTER TABLE `aportes` ENABLE KEYS */;
 
+-- Volcando estructura para tabla mcgdb.archivo
+CREATE TABLE IF NOT EXISTS `archivo` (
+  `idArchivo` int NOT NULL,
+  `nombreReal` varchar(550) NOT NULL DEFAULT '',
+  `nombreDerivado` varchar(550) NOT NULL DEFAULT '',
+  `rutaRelativa` text CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `estadoArchivo` enum('Y','N') DEFAULT 'Y',
+  `fechaCreacion` datetime NOT NULL,
+  `fechaModificacion` datetime NOT NULL,
+  PRIMARY KEY (`idArchivo`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+
+-- Volcando datos para la tabla mcgdb.archivo: ~4 rows (aproximadamente)
+/*!40000 ALTER TABLE `archivo` DISABLE KEYS */;
+INSERT INTO `archivo` (`idArchivo`, `nombreReal`, `nombreDerivado`, `rutaRelativa`, `estadoArchivo`, `fechaCreacion`, `fechaModificacion`) VALUES
+	(1, 'NoImage.png', 'B2x6Y_zvYYQXVjJO_GelTjUv.png', 'uploads/B2x6Y_zvYYQXVjJO_GelTjUv.png', 'Y', '2021-09-16 00:00:07', '2021-09-16 00:00:07'),
+	(2, 'NoImage.png', 'L1v_2DvoKWGgOh8hQptMBoxy.png', 'uploads/L1v_2DvoKWGgOh8hQptMBoxy.png', 'Y', '2021-09-16 00:10:08', '2021-09-16 00:10:08'),
+	(3, 'Modelo Bd Cartera correccion .png', '4tUTtLAPX3-GsqCBVHBmNBhN.png', 'uploads/4tUTtLAPX3-GsqCBVHBmNBhN.png', 'Y', '2021-09-16 00:10:57', '2021-09-16 00:10:57'),
+	(4, '50 SOMBRAS DE GREY-poster.jpg', '5exmvEOQTqwIwL8yytMm3FIH.jpg', 'uploads/5exmvEOQTqwIwL8yytMm3FIH.jpg', 'Y', '2021-09-16 00:11:05', '2021-09-16 00:11:05');
+/*!40000 ALTER TABLE `archivo` ENABLE KEYS */;
+
 -- Volcando estructura para tabla mcgdb.area
 CREATE TABLE IF NOT EXISTS `area` (
   `Id_Area` int NOT NULL AUTO_INCREMENT,
@@ -161,13 +182,13 @@ CREATE TABLE IF NOT EXISTS `cliente` (
 INSERT INTO `cliente` (`Id_Cliente`, `Fecha_Creacion`, `Fecha_Modificacion`, `Estado`, `id_persona`) VALUES
 	(1, '2021-08-29 22:04:19', '2021-08-29 22:04:22', 'Y', 1),
 	(2, '2021-08-29 22:04:32', '2021-08-29 22:04:33', 'Y', 2),
-	(3, '2021-09-02 19:27:08', '2021-09-02 19:27:08', 'Y', 3),
-	(4, '2021-09-06 03:50:51', '2021-09-06 03:50:51', 'Y', 4),
-	(5, '2021-09-06 03:53:57', '2021-09-06 03:53:57', 'Y', 5),
-	(6, '2021-09-07 01:01:06', '2021-09-07 19:25:08', 'Y', 6),
+	(3, '2021-09-02 19:27:08', '2021-09-02 19:27:08', 'N', 3),
+	(4, '2021-09-06 03:50:51', '2021-09-06 03:50:51', 'N', 4),
+	(5, '2021-09-06 03:53:57', '2021-09-06 03:53:57', 'N', 5),
+	(6, '2021-09-07 01:01:06', '2021-09-07 19:25:08', 'N', 6),
 	(7, '2021-09-07 04:19:28', '2021-09-06 23:19:46', 'N', 7),
 	(8, '2021-09-07 20:39:37', '2021-09-07 15:39:37', 'N', 8),
-	(9, '2021-09-07 22:00:27', '2021-09-07 17:00:27', 'Y', 9);
+	(9, '2021-09-07 22:00:27', '2021-09-07 17:00:27', 'N', 9);
 /*!40000 ALTER TABLE `cliente` ENABLE KEYS */;
 
 -- Volcando estructura para tabla mcgdb.cliente_contrato
@@ -204,7 +225,7 @@ CREATE TABLE IF NOT EXISTS `contrato_venta` (
   CONSTRAINT `fk_Contrato_Inmueble1` FOREIGN KEY (`Fk_Id_Inmueble`) REFERENCES `inmueble` (`Id_Inmueble`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb3;
 
--- Volcando datos para la tabla mcgdb.contrato_venta: ~1 rows (aproximadamente)
+-- Volcando datos para la tabla mcgdb.contrato_venta: ~0 rows (aproximadamente)
 /*!40000 ALTER TABLE `contrato_venta` DISABLE KEYS */;
 INSERT INTO `contrato_venta` (`Id_Contrato`, `Numero_Contrato`, `Forma_Pago`, `Valor_Contrato`, `Fecha_Venta`, `Observacion_Contrato`, `Fk_Id_Inmueble`) VALUES
 	(1, '1111111', 'none', 1123434, '2021-09-11', 'none observacion', 1);
@@ -304,14 +325,17 @@ CREATE TABLE IF NOT EXISTS `etapa` (
   PRIMARY KEY (`Id_Etapa`),
   KEY `FK_etapa_proyecto` (`Fk_Id_Proyecto`),
   CONSTRAINT `FK_etapa_proyecto` FOREIGN KEY (`Fk_Id_Proyecto`) REFERENCES `proyecto` (`Id_Proyecto`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb3;
 
--- Volcando datos para la tabla mcgdb.etapa: ~3 rows (aproximadamente)
+-- Volcando datos para la tabla mcgdb.etapa: ~6 rows (aproximadamente)
 /*!40000 ALTER TABLE `etapa` DISABLE KEYS */;
 INSERT INTO `etapa` (`Id_Etapa`, `Num_Etapa`, `Estado_Etapa`, `Num_Manzanas`, `Fecha_Modicacion`, `Fk_Id_Proyecto`) VALUES
-	(1, '1', 'Y', 4, NULL, 1),
-	(2, '2', 'Y', 3, NULL, 1),
-	(3, 'Unica', 'Proyectada', 3, NULL, 4);
+	(1, 'Primera', 'Finalizada', 4, NULL, 1),
+	(2, 'Segunda', 'En Ejecución', 3, NULL, 1),
+	(3, 'Unica', 'Proyectada', 3, NULL, 4),
+	(4, 'Tercera', 'Proyectada', 6, NULL, 1),
+	(5, 'Cuarta', 'Proyectada', 5, NULL, 1),
+	(6, 'Sexta', 'N', 9, NULL, 1);
 /*!40000 ALTER TABLE `etapa` ENABLE KEYS */;
 
 -- Volcando estructura para tabla mcgdb.inmueble
@@ -436,7 +460,7 @@ CREATE TABLE IF NOT EXISTS `proyecto` (
   PRIMARY KEY (`Id_Proyecto`)
 ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb3;
 
--- Volcando datos para la tabla mcgdb.proyecto: ~4 rows (aproximadamente)
+-- Volcando datos para la tabla mcgdb.proyecto: ~3 rows (aproximadamente)
 /*!40000 ALTER TABLE `proyecto` DISABLE KEYS */;
 INSERT INTO `proyecto` (`Id_Proyecto`, `Nombre_Proyecto`, `Ubicacion_Proyecto`, `Estado_Proyecto`, `Fecha_Modificacion`) VALUES
 	(1, 'Punta del este', 'Via  a morelia detras de las casa fiscales ejercito', 'En Venta', '2021-09-11 00:29:41'),
@@ -508,6 +532,32 @@ INSERT INTO `usuario` (`Id_Usuario`, `Usuario`, `Contraseña`, `Fecha_Creacion_U
 -- Volcando estructura para procedimiento mcgdb.ConsultarAdicional
 DELIMITER //
 CREATE PROCEDURE `ConsultarAdicional`(
+	IN `ID` INT
+)
+    COMMENT 'Procediento para buscar un adiciona por id'
+BEGIN
+	DECLARE exit handler for sqlexception
+  		BEGIN
+    		CALL `SHOW_MENSAJE`('1', 'Error, por el momento el sistema está teniendo problemas para realizar la operación solicitada. Tome una foto o captura de pantalla y contáctese con soporte, disculpe las molestias.');
+  		ROLLBACK;
+	END;
+
+	DECLARE exit handler for sqlwarning
+ 		BEGIN
+   	 	CALL `SHOW_MENSAJE`('2', 'Se ha producido un evento inesperado, por favor contáctar con soporte.');
+ 		ROLLBACK;
+	END;
+
+	START TRANSACTION;
+		SELECT adicional.Id_Adicional AS id, adicional.Concepto, adicional.Valor_Adicional AS valor, adicional.Estado_Adicional AS estado, 
+				adicional.Fecha_Adicional AS fecha FROM adicional WHERE adicional.Id_Adicional=ID;
+	COMMIT;
+END//
+DELIMITER ;
+
+-- Volcando estructura para procedimiento mcgdb.ConsultarAdicionalesInmueble
+DELIMITER //
+CREATE PROCEDURE `ConsultarAdicionalesInmueble`(
 	IN `inmuebleId` INT
 )
     COMMENT 'Procediento para listar los adicionales del inmueble'
@@ -525,7 +575,34 @@ BEGIN
 	END;
 
 	START TRANSACTION;
-		SELECT adicional.Id_Adicional AS id, adicional.Concepto, adicional.Valor_Adicional AS valor, adicional.Estado_Adicional AS estado, adicional.Fecha_Adicional AS fecha FROM adicional WHERE adicional.Fk_Id_Inmueble=inmuebleId;
+		SELECT adicional.Id_Adicional AS id, adicional.Concepto, adicional.Valor_Adicional AS valor, adicional.Estado_Adicional AS estado, 
+				adicional.Fecha_Adicional AS fecha FROM adicional WHERE adicional.Fk_Id_Inmueble=inmuebleId;
+	COMMIT;
+END//
+DELIMITER ;
+
+-- Volcando estructura para procedimiento mcgdb.ConsultarArchivos
+DELIMITER //
+CREATE PROCEDURE `ConsultarArchivos`()
+    COMMENT 'Procedimiento para consultar todos los archivos guardados'
+BEGIN
+	DECLARE exit handler for sqlexception
+  		BEGIN
+    		CALL `SHOW_MENSAJE`('1', 'Error, por el momento el sistema está teniendo problemas para realizar la operación solicitada. Tome una foto o captura de pantalla y contáctese con soporte, disculpe las molestias.');
+  		ROLLBACK;
+	END;
+
+	DECLARE exit handler for sqlwarning
+ 		BEGIN
+   	 	CALL `SHOW_MENSAJE`('2', 'Se ha producido un evento inesperado, por favor contáctar con soporte.');
+ 		ROLLBACK;
+	END;
+
+	START TRANSACTION;
+		SELECT archivo.idArchivo AS id,archivo.nombreReal AS nombre, archivo.rutaRelativa AS ruta,
+		archivo.fechaCreacion fechaCreacion FROM archivo
+		WHERE archivo.estadoArchivo='Y'
+		ORDER BY archivo.idArchivo;
 	COMMIT;
 END//
 DELIMITER ;
@@ -736,10 +813,9 @@ DECLARE exit handler for sqlexception
  		ROLLBACK;
 	END;
 	START TRANSACTION;
-		SELECT etapa.Id_Etapa AS id, etapa.Num_Etapa AS numero,COUNT(inmueble.Id_Inmueble) AS inmuebles, etapa.Num_Manzanas,
-		SUM(inmueble.Valor_Final) AS valor ,etapa.Estado_Etapa AS estado 
-		FROM etapa INNER JOIN inmueble ON etapa.Id_Etapa= inmueble.Fk_Id_Etapa 
-		WHERE etapa.Id_Etapa=ID GROUP BY etapa.Id_Etapa;
+		SELECT etapa.Id_Etapa AS id, etapa.Num_Etapa AS numero,etapa.Num_Manzanas AS manzanas,etapa.Estado_Etapa AS estado, 
+				 etapa.Fk_Id_Proyecto AS idproyecto FROM etapa 
+		WHERE etapa.Id_Etapa=ID;
 	COMMIT;
 END//
 DELIMITER ;
@@ -767,7 +843,7 @@ DECLARE exit handler for sqlexception
 		SELECT etapa.Id_Etapa AS id, etapa.Num_Etapa AS numero,(SELECT COUNT(inmueble.Id_Inmueble) FROM inmueble WHERE inmueble.Fk_Id_Proyecto=etapa.Fk_Id_Proyecto AND inmueble.Fk_Id_Etapa=etapa.Id_Etapa AND inmueble.Estado!='N')  AS inmuebles, etapa.Num_Manzanas AS manzanas,
 		(SELECT SUM(inmueble.Valor_Final)FROM inmueble WHERE inmueble.Fk_Id_Proyecto=etapa.Fk_Id_Proyecto AND inmueble.Fk_Id_Etapa=etapa.Id_Etapa AND inmueble.Estado!='N')  AS valor ,etapa.Estado_Etapa AS estado 
 		FROM etapa LEFT JOIN inmueble ON etapa.Id_Etapa= inmueble.Fk_Id_Etapa
-		WHERE etapa.Fk_Id_Proyecto=proyectoid GROUP BY etapa.Id_Etapa;
+		WHERE etapa.Fk_Id_Proyecto=proyectoid AND etapa.Estado_Etapa!='N' GROUP BY etapa.Id_Etapa;
 	COMMIT;
 END//
 DELIMITER ;
@@ -901,7 +977,7 @@ BEGIN
 	START TRANSACTION;
 		SELECT proyecto.Id_Proyecto AS id, proyecto.Nombre_Proyecto AS nombre, proyecto.Ubicacion_Proyecto AS ubicacion, COUNT(etapa.Id_Etapa) AS etapas,
 				 proyecto.Estado_Proyecto AS estado FROM proyecto LEFT JOIN etapa ON etapa.Fk_Id_Proyecto=proyecto.Id_Proyecto 
-				 WHERE proyecto.Estado_Proyecto!='N' 
+				 WHERE proyecto.Estado_Proyecto!='N' AND etapa.Estado_Etapa!='N' 
 				 GROUP BY proyecto.Id_Proyecto;
 	COMMIT;
 END//
@@ -951,6 +1027,32 @@ BEGIN
 
 	START TRANSACTION;
 		SELECT rol.Id_Rol AS id, rol.Nombre_Rol AS nombre, rol.Descripcion AS descripcion FROM rol WHERE rol.Estado='Y';
+	COMMIT;
+END//
+DELIMITER ;
+
+-- Volcando estructura para procedimiento mcgdb.ConsultarSesionUsuario
+DELIMITER //
+CREATE PROCEDURE `ConsultarSesionUsuario`(
+	IN `user` VARCHAR(150),
+	IN `pass` VARCHAR(150)
+)
+    COMMENT 'procedimiento para consultar la sesión de un usuario'
+BEGIN
+	DECLARE exit handler for sqlexception
+  		BEGIN
+    		CALL `SHOW_MENSAJE`('1', 'Error, por el momento el sistema está teniendo problemas para realizar la operación solicitada. Tome una foto o captura de pantalla y contáctese con soporte, disculpe las molestias.');
+  		ROLLBACK;
+	END;
+
+	DECLARE exit handler for sqlwarning
+ 		BEGIN
+   	 	CALL `SHOW_MENSAJE`('2', 'Se ha producido un evento inesperado, por favor contáctar con soporte.');
+ 		ROLLBACK;
+	END;
+
+	START TRANSACTION;
+		SELECT Usuario, Fk_Id_Rol  FROM  usuario where Usuario=user and Contraseña=pass;
 	COMMIT;
 END//
 DELIMITER ;
@@ -1046,9 +1148,43 @@ DECLARE exit handler for sqlexception
 
 	START TRANSACTION;
 		SET @IDADIC=(SELECT IFNULL(MAX(adicional.Id_Adicional),0) FROM adicional);	
-		INSERT INTO adicional (adicional.Id_Adicional, adicional.Concepto, adicional.Valor_Adicional, adicional.Estado_Adicional, adicional.Fecha_Adicional, adicional.Fk_Id_Inmueble) 
+		INSERT INTO adicional (adicional.Id_Adicional, adicional.Concepto, adicional.Valor_Adicional, adicional.Estado_Adicional, 
+						adicional.Fecha_Adicional, adicional.Fk_Id_Inmueble) 
 		VALUES (@IDADIC+1, Concepto, Valor_Adicional, 'Y', Fecha_Adicional, Id_Inmueble);
 		CALL `SHOW_MENSAJE`('3', 'Registro exitoso, el adicional fué creado de forma exitosa.');
+	COMMIT;
+END//
+DELIMITER ;
+
+-- Volcando estructura para procedimiento mcgdb.CrearArchivo
+DELIMITER //
+CREATE PROCEDURE `CrearArchivo`(
+	IN `nombreReal` VARCHAR(550),
+	IN `nombreDerivado` VARCHAR(550),
+	IN `rutaRelativa` VARCHAR(550)
+)
+    COMMENT 'Procedimiento para crear un archivo'
+BEGIN
+	DECLARE exit handler for sqlexception
+  		BEGIN
+    		CALL `SHOW_MENSAJE`('1', 'Error, por el momento el sistema está teniendo problemas para realizar la operación solicitada. Tome una foto o captura de pantalla y contáctese con soporte, disculpe las molestias.');
+  		ROLLBACK;
+	END;
+
+	DECLARE exit handler for sqlwarning
+ 		BEGIN
+   	 	CALL `SHOW_MENSAJE`('2', 'Se ha producido un evento inesperado, por favor contáctar con soporte.');
+ 		ROLLBACK;
+	END;
+
+	START TRANSACTION;
+		SET @IDARC=(SELECT IFNULL(MAX(archivo.idArchivo),0) FROM archivo);		
+		
+		INSERT INTO archivo
+		(archivo.idArchivo,archivo.nombreReal,archivo.nombreDerivado,archivo.rutaRelativa,archivo.fechaCreacion,archivo.fechaModificacion)
+		VALUES (@IDARC+1,nombreReal,nombreDerivado,rutaRelativa,NOW(),NOW());
+		
+		CALL `SHOW_MENSAJE`('2', 'Se ha registrado de forma exitosa el archivo');
 	COMMIT;
 END//
 DELIMITER ;
@@ -1201,8 +1337,8 @@ DELIMITER ;
 -- Volcando estructura para procedimiento mcgdb.CrearEtapa
 DELIMITER //
 CREATE PROCEDURE `CrearEtapa`(
-	IN `num_etapa` VARCHAR(15),
-	IN `estado_etapa` INT,
+	IN `numero` VARCHAR(15),
+	IN `estado` VARCHAR(15),
 	IN `manzanas` INT,
 	IN `idproyecto` INT
 )
@@ -1225,7 +1361,7 @@ DECLARE exit handler for sqlexception
 
 		INSERT INTO etapa (etapa.Id_Etapa, etapa.Num_Etapa, etapa.Estado_Etapa, etapa.Num_Manzanas, etapa.Fk_Id_Proyecto) 
 		VALUES 
-		(@IDETA+1, num_etapa, estado_etapa, manzanas, idproyecto);
+		(@IDETA+1, numero, estado, manzanas, idproyecto);
 		CALL `SHOW_MENSAJE`('3', 'Registro exitoso, la etapa fué creada de forma exitosa.');
 	COMMIT;
 END//
@@ -1495,7 +1631,7 @@ BEGIN
 		
 		INSERT INTO cliente_contrato(cliente_contrato.Pfk_Id_Cliente,cliente_contrato.Pfk_Id_Contrato,cliente_contrato.Fecha_Cambio,cliente_contrato.Estado)
 		VALUES(ID_CLIENTE,@IDCONT+1,NOW(),'Y');
-  	 	CALL `SHOW_MENSAJE`('3', 'Se ha creado el contrato de forma exitosa');
+  	 	CALL `SHOW_MENSAJE`('3', 'Cliente contrato editado de forma exitosa!');
 	COMMIT;
 END//
 DELIMITER ;
@@ -1503,7 +1639,10 @@ DELIMITER ;
 -- Volcando estructura para procedimiento mcgdb.EditarEtapa
 DELIMITER //
 CREATE PROCEDURE `EditarEtapa`(
-	IN `ID` INT
+	IN `ID` INT,
+	IN `numero` VARCHAR(15),
+	IN `estado` VARCHAR(15),
+	IN `manzanas` INT
 )
     COMMENT 'procedimiento para editar una etapa'
 BEGIN
@@ -1521,7 +1660,7 @@ BEGIN
 
 	START TRANSACTION;
 		
-		UPDATE etapa SET etapa.Num_Etapa=num_etapa, etapa.Estado_Etapa=estado_etapa, 
+		UPDATE etapa SET etapa.Num_Etapa=numero, etapa.Estado_Etapa=estado, 
 		etapa.Num_Manzanas=manzanas WHERE etapa.Id_Etapa=ID;
 
 		CALL `SHOW_MENSAJE`('3', 'Datos de la etapa modificados de forma exitosa!');
@@ -1672,6 +1811,35 @@ BEGIN
 		WHERE persona.id_persona=@IDUSER;
 
 		CALL `SHOW_MENSAJE`('3', 'Datos del usuario modificados de forma exitosa!');
+	COMMIT;
+END//
+DELIMITER ;
+
+-- Volcando estructura para procedimiento mcgdb.EliminarArchivo
+DELIMITER //
+CREATE PROCEDURE `EliminarArchivo`(
+	IN `ID` INT
+)
+    COMMENT 'Procedimiento para eliminar un archivo del sistema de forma lógica'
+BEGIN
+	DECLARE exit handler for sqlexception
+  		BEGIN
+    		CALL `SHOW_MENSAJE`('1', 'Error, por el momento el sistema está teniendo problemas para realizar la operación solicitada. Tome una foto o captura de pantalla y contáctese con soporte, disculpe las molestias.');
+  		ROLLBACK;
+	END;
+
+	DECLARE exit handler for sqlwarning
+ 		BEGIN
+   	 	CALL `SHOW_MENSAJE`('2', 'Se ha producido un evento inesperado, por favor contáctar con soporte.');
+ 		ROLLBACK;
+	END;
+	START TRANSACTION;
+		IF((SELECT archivo.estadoArchivo FROM archivo WHERE archivo.idArchivo=ID)= 'Y') THEN
+			UPDATE archivo SET archivo.estadoArchivo="N" WHERE archivo.idArchivo=ID;
+			CALL `SHOW_MENSAJE`('3', 'Archivo eliminado con éxito.');
+		ELSE
+			CALL `SHOW_MENSAJE`('1', 'Lo sentimos, ya fué eliminado o no existe.');
+		END IF;
 	COMMIT;
 END//
 DELIMITER ;
