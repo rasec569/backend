@@ -6,6 +6,7 @@ const cors = require('cors');
 app.use(bodyParser.urlencoded({extended:false}));
 app.use(bodyParser.json());
 app.use(cors());
+app.options('*', cors());
 app.use(express.static('uploads'));
 app.use('/uploads', express.static('uploads'));
 //Routes
