@@ -51,6 +51,14 @@ router.get('/proyecto/:id', (req,res)=>{
     }
   });
 });
+router.get('/etapa/:id', (req,res)=>{
+  const {id} = req.params;
+  conexion.query(`CALL ConsultarInmueblesEtapa('${id}')`, (err, rows, fields) => {
+    if (!err) {
+      res.json(rows[0]);
+    }
+  });
+});
 //Buscar inmueble
 router.get('/:id', (req,res)=>{
   const {id} = req.params;
