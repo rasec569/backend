@@ -21,6 +21,7 @@ const proyectoRoute= require('./api/routes/proyecto');
 const inmuebleRoute= require('./api/routes/inmueble');
 const etapaRoute= require('./api/routes/etapa');
 const adicionalRoute= require('./api/routes/adicional');
+const costoRoute= require('./api/routes/costo');
 
 app.use('/user',userRoute);
 app.use('/login',loginRoute);
@@ -33,5 +34,6 @@ app.use('/clients',clientsRoute);
 app.use('/adicional',adicionalRoute);
 app.use('/etapa',etapaRoute);
 app.use('/categoria',categoriaRoute);
+app.use('/costo',costoRoute);
 
 module.exports = app;
