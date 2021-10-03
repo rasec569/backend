@@ -22,6 +22,8 @@ const inmuebleRoute= require('./api/routes/inmueble');
 const etapaRoute= require('./api/routes/etapa');
 const adicionalRoute= require('./api/routes/adicional');
 const costoRoute= require('./api/routes/costo');
+const acreedorRoute = require('./api/routes/acreedor');
+const egresoRoute = require('./api/routes/egreso');
 
 app.use('/user',userRoute);
 app.use('/login',loginRoute);
@@ -35,5 +37,7 @@ app.use('/adicional',adicionalRoute);
 app.use('/etapa',etapaRoute);
 app.use('/categoria',categoriaRoute);
 app.use('/costo',costoRoute);
+app.use('/acreedor', acreedorRoute);
+app.use('/egreso',egresoRoute);
 
 module.exports = app;
