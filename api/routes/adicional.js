@@ -30,10 +30,10 @@ router.use(function (req, res, next) {
     next();
   }
 });
-// listar Etapas del Proyecto
-router.get("/inmueble/:id", (req, res) => {
+// listar Adionales del Proyecto
+router.get("/contrato/:id", (req, res) => {
     const { id } = req.params;
-    conexion.query(`CALL ConsultarAdicionalesInmueble('${id}')`, (err, rows, fields) => {
+    conexion.query(`CALL ConsultarAdicionalesContrato('${id}')`, (err, rows, fields) => {
       if (!err) {
         res.json(rows[0]);       
       }
@@ -42,7 +42,7 @@ router.get("/inmueble/:id", (req, res) => {
       }
     });
   });
-  // Buscar etapa
+  // Buscar Adicional
   router.get("/:id", (req, res) => {
   const { id } = req.params;
   conexion.query(`CALL ConsultarAdicional('${id}')`, (err, rows, fields) => {
@@ -51,10 +51,10 @@ router.get("/inmueble/:id", (req, res) => {
     }
   });
 });
-//crear Proyecto
+//crear
   router.post("/", (req, res) => {
-  const {num_etapa,estado_etapa,manzanas,idproyecto} = req.body;
-  let sql = `CALL CrearAdicional('${num_etapa}', '${estado_etapa}', '${manzanas}', '${idproyecto}')`
+  const {concepto,valor,fecha,idcontrato} = req.body;
+  let sql = `CALL CrearAdicional('${concepto}', '${valor}', '${fecha}', '${idcontrato}')`
   console.log(sql)
   conexion.query(sql,(err, rows, fields) => {
       if (!err) {
@@ -66,7 +66,7 @@ router.get("/inmueble/:id", (req, res) => {
 //eliminar
 router.delete("/", (req, res) => {
   const {id} = req.body;
-  conexion.query(`CALL EliminarEtapa('${id}')`, (err, rows, fields) => {
+  conexion.query(`CALL EliminarAdicional('${id}')`, (err, rows, fields) => {
     if (!err) {
       res.json(rows[0]);
     }else{
@@ -77,8 +77,8 @@ router.delete("/", (req, res) => {
 //modificar
 router.put("/:id", (req, res) => {
   const {id} = req.params;
-  const {num_etapa,estado_etapa,manzanas} = req.body;
-  let sql = `CALL EditarEtapa('${id}', '${num_etapa}', '${estado_etapa}', '${manzanas}')`;
+  const {concepto,valor,fecha} = req.body;
+  let sql = `CALL EditarAdicional('${id}', '${concepto}', '${valor}', '${fecha}')`;
   conexion.query(sql, (err, rows, fields) => {
     if (!err) {
       if (!err) {

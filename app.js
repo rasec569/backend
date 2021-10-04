@@ -24,6 +24,7 @@ const adicionalRoute= require('./api/routes/adicional');
 const costoRoute= require('./api/routes/costo');
 const acreedorRoute = require('./api/routes/acreedor');
 const egresoRoute = require('./api/routes/egreso');
+const carteraRoute = require('./api/routes/cartera');
 
 app.use('/user',userRoute);
 app.use('/login',loginRoute);
@@ -39,5 +40,6 @@ app.use('/categoria',categoriaRoute);
 app.use('/costo',costoRoute);
 app.use('/acreedor', acreedorRoute);
 app.use('/egreso',egresoRoute);
+app.use('/cartera',carteraRoute);
 
 module.exports = app;
