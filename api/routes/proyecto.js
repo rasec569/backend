@@ -49,6 +49,15 @@ router.get("/:id", (req, res) => {
     }
   });
 });
+// Buscar detalle Proyecto
+router.get("/detalle/:id", (req, res) => {
+  const { id } = req.params;
+  conexion.query(`CALL ConsultarProyectoDetalle('${id}')`, (err, rows, fields) => {
+    if (!err) {
+      res.json(rows[0]);
+    }
+  });
+});
 //crear Proyecto
 router.post("/", (req, res) => {
   const {nombre, ubicacion, estado,num_etapa,estado_etapa,manzanas} = req.body;
