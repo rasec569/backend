@@ -78,6 +78,7 @@ router.get("/:id", (req, res) => {
     const {id} = req.params;
     const {concepto, valor, idinmueble ,fecha } = req.body;
     let sql = `CALL EditarCostoInmueble('${id}', '${concepto}', '${valor}', '${fecha}', '${idinmueble}')`;
+    console.log(sql);
     conexion.query(sql, (err, rows, fields) => {
       if (!err) {
         if (!err) {
