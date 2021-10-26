@@ -3,11 +3,15 @@ const mysql = require('mysql');
 const util = require('util')
 
 const conexion=mysql.createPool({
-    connectionLimit: 10,
-    host: '72.167.41.112',
+    connectionLimit: 15,
+    host: 'localhost',
+    user: 'root',
+    password: 'mcgconstrucciones',
+    database: 'mcgdb'
+    /* host: '72.167.41.112',
     user: 'mitch',
     password: 'Hj-b!HGr3Z%d',
-    database: 'mcgdb'
+    database: 'mcgdb' */
 
     /* host: '192.232.221.82',
     user: 'ampublic_mcgsoft',

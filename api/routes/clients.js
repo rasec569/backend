@@ -56,7 +56,7 @@ router.get("/:id", (req, res) => {
 //Cliente
 router.post("/", (req, res) => {
   const {
-    identification,
+    identificacion,
     nombres,
     apellidos,
     telefono,
@@ -64,8 +64,10 @@ router.post("/", (req, res) => {
     correo
   } =
   req.body;
+  let sql = `CALL CrearCliente('${nombres}', '${apellidos}', '${identificacion}', '${telefono}', '${direccion}', '${correo}')`
+  console.log(sql);
   conexion.query(
-    `CALL CrearCliente('${nombres}', '${apellidos}', '${identification}', '${telefono}', '${direccion}', '${correo}')`,
+    sql,
     (err, rows, fields) => {
       if (!err) {
         res.json(rows[0]);
