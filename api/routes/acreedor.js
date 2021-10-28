@@ -51,8 +51,10 @@ router.get("/:id", (req, res) => {
 //crear acreedor
 router.post("/", (req, res) => {
   const {nombres, apellidos, identificacion, telefono, direccion, correo, descripcion}= req.body;
-  conexion.query(`CALL CrearAcreedor('${nombres}', '${apellidos}', '${identificacion}', '${telefono}', '${direccion}', '${correo}', '${descripcion}')`,
+  let sql = `CALL CrearAcreedor('${nombres}', '${apellidos}', '${identificacion}', '${telefono}', '${direccion}', '${correo}', '${descripcion}')`;
+  conexion.query(sql,
     (err, rows, fields) => {
+      console.log(sql);
       if (!err) {
         res.json(rows[0]);
       }else{
