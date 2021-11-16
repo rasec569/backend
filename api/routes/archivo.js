@@ -4,26 +4,8 @@ const router = express.Router();
 const conexion = require("../config/conexion");
 // token para las peticiones a mysql
 const jwt = require("jsonwebtoken");
-// save file
-const multer = require("multer");
-var path = require("path");
-var storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "./uploads");
-  },
-  filename: function (req, file, cb) {
-    cb(
-      null,
-      md5(Date.now()) + "-" + Date.now() + path.extname(file.originalname)
-    );
-  },
-});
+const multer = require("../config/multer");
 
-var upload = multer({
-  storage: storage,
-});
-
-var md5 = require("md5");
 // check tocken
 router.use(function (req, res, next) {
   //Validate users access token on each request to our API.
@@ -50,37 +32,41 @@ router.use(function (req, res, next) {
   }
 });
 
-/*router.post('/', multipartMiddleware, (req, res, next) => {
-    conexion.query(
-        `CALL CrearArchivo('${req.files.uploads[0].originalFilename}', '${String(req.files.uploads[0].path).replace('uploads','')}', '${String(req.files.uploads[0].path).replace('uploads','uploads/')}')`,
-        (err, rows, fields) => {
-            if (!err) {
-                res.json(rows[0]);
-            }
-        }
-    );
-});*/
-router.post("/", upload.single("uploads[]"), (req, res, next) => {
-  const file = req.file;
-  const { idCategoria, idarea } = JSON.parse(req.body.file);
-  if (!file) {
+router.post("/", multer.array("uploads", 10), (req, res, next) => {
+  const files = req.files;
+
+  if (files.length === 0) {
     const error = new Error("Please upload a file");
     error.httpStatusCode = 400;
     return next(error);
   }
-  let sql = `CALL CrearArchivo('${req.file.originalname}', '${String(
-    req.file.filename
-  )}', '${String("uploads/" + req.file.filename)}','${String(
-    JSON.parse(req.body.file).idCategoria
-  )}','${String(JSON.parse(req.body.file).idarea)}')`;
-  conexion.query(sql, (err, rows, fields) => {
-    console.log(sql)
-    if (!err) {
-      res.json(rows[0]);
-    }
-  });
-  //res.send(file)
+  if (!Array.isArray(files)) {
+    res.status(400).json({});
+  }
+    files.forEach(async (file, index) => {
+      let { idCategoria, idarea } = JSON.parse(
+        Array.isArray(req.body.file) ? req.body.file[index] : req.body.file
+      );
+      let sql = `CALL CrearArchivo('${file.originalname}','${file.filename}','${String("uploads/" + file.filename)}','${idCategoria}','${idarea}');`;
+        console.log(sql);
+        
+      conexion.query(sql, (err, rows, fields) => {
+        if (err) {
+          console.log("[ERROR]", err);
+          res.status(400).json({ message: "Error upload file" });
+        }
+        /* res.json(rows[0]); */
+        console.log(rows);
+      });
+    });
+    
+    res.json({ 
+        TIPO: 3,
+        MENSAJE: 'Se ha registrado de forma exitosa el archivo'
+       });
+    console.log("[INFO] UPLOAD DATA: OK"); 
 });
+
 router.get("/", (req, res) => {
   conexion.query("CALL `ConsultarArchivos`()", (err, rows, fields) => {
     if (!err) {
