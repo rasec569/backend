@@ -30,10 +30,10 @@ router.use(function (req, res, next) {
     next();
   }
 });
-// listar Adionales del Proyecto
+// listar aportes del Proyecto
 router.get("/contrato/:id", (req, res) => {
     const { id } = req.params;
-    conexion.query(`CALL ConsultarAdicionalesContrato('${id}')`, (err, rows, fields) => {
+    conexion.query(`CALL ConsultarAcuerdosPagoCliente('${id}')`, (err, rows, fields) => {
       if (!err) {
         res.json(rows[0]);       
       }
@@ -45,18 +45,16 @@ router.get("/contrato/:id", (req, res) => {
   // Buscar Adicional
   router.get("/:id", (req, res) => {
   const { id } = req.params;
-  let sql = `CALL ConsultarAdicional('${id}')`
-  console.log(sql);
-  conexion.query(sql, (err, rows, fields) => {
+  conexion.query(`CALL ConsultarAcuerdoPago('${id}')`, (err, rows, fields) => {
     if (!err) {
       res.json(rows[0]);
     }
   });
 });
-//crear
+//crear aporte_cliente valor_credito entidad contratoid
   router.post("/", (req, res) => {
-  const {concepto,valor,fecha,contratoid} = req.body;
-  let sql = `CALL CrearAdicional('${concepto}', '${valor}', '${fecha}', '${contratoid}')`
+  const {aporte_cliente,valor_credito,entidad,contratoid} = req.body;
+  let sql = `CALL CrearAcuerdoPagoCliente('${aporte_cliente}', '${valor_credito}', '${entidad}', '${contratoid}')`
   console.log(sql)
   conexion.query(sql,(err, rows, fields) => {
       if (!err) {
@@ -66,11 +64,9 @@ router.get("/contrato/:id", (req, res) => {
   );
 });
 //eliminar
-router.delete("/", (req, res) => {  
+router.delete("/", (req, res) => {
   const {id} = req.body;
-  let sql = `CALL EliminarAdicional('${id}')`
-  console.log("llego",sql);
-  conexion.query(sql, (err, rows, fields) => {
+  conexion.query(`CALL EliminarAcuerdoPago('${id}')`, (err, rows, fields) => {
     if (!err) {
       res.json(rows[0]);
     }else{
@@ -81,8 +77,8 @@ router.delete("/", (req, res) => {
 //modificar
 router.put("/:id", (req, res) => {
   const {id} = req.params;
-  const {concepto,valor,fecha} = req.body;
-  let sql = `CALL EditarAdicional('${id}', '${concepto}', '${valor}', '${fecha}')`;
+  const {aporte_cliente,valor_credito,entidad} = req.body;
+  let sql = `CALL EditarAcuerdoPagoCliente('${id}', '${aporte_cliente}', '${valor_credito}', '${entidad}')`;
   conexion.query(sql, (err, rows, fields) => {
     if (!err) {
       if (!err) {

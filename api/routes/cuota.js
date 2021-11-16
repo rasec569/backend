@@ -30,10 +30,10 @@ router.use(function (req, res, next) {
     next();
   }
 });
-// listar Adionales del Proyecto
-router.get("/contrato/:id", (req, res) => {
+// listar cuota del cliente
+router.get("/cliente/:id", (req, res) => {
     const { id } = req.params;
-    conexion.query(`CALL ConsultarAdicionalesContrato('${id}')`, (err, rows, fields) => {
+    conexion.query(`CALL ConsultarCuotasAcuerdoPagoCliente('${id}')`, (err, rows, fields) => {
       if (!err) {
         res.json(rows[0]);       
       }
@@ -42,11 +42,34 @@ router.get("/contrato/:id", (req, res) => {
       }
     });
   });
-  // Buscar Adicional
+  
+  router.get("/credito/:id", (req, res) => {
+    const { id } = req.params;
+    conexion.query(`CALL ConsultarCuotasAcuerdoPagoBanco('${id}')`, (err, rows, fields) => {
+      if (!err) {
+        res.json(rows[0]);       
+      }
+      else{
+        console.log(" error en el backend",err);
+      }
+    });
+  });
+  router.get("/pendiente/:id", (req, res) => {
+    const { id } = req.params;
+    conexion.query(`CALL ConsultarCuotasPendientesAcuerdo('${id}')`, (err, rows, fields) => {
+      if (!err) {
+        res.json(rows[0]);       
+      }
+      else{
+        console.log(" error en el backend",err);
+      }
+    });
+  });
+  // Buscar
   router.get("/:id", (req, res) => {
   const { id } = req.params;
-  let sql = `CALL ConsultarAdicional('${id}')`
-  console.log(sql);
+  let sql = `CALL ConsultarCuota('${id}')`
+  console.log("este",sql);
   conexion.query(sql, (err, rows, fields) => {
     if (!err) {
       res.json(rows[0]);
@@ -55,9 +78,9 @@ router.get("/contrato/:id", (req, res) => {
 });
 //crear
   router.post("/", (req, res) => {
-  const {concepto,valor,fecha,contratoid} = req.body;
-  let sql = `CALL CrearAdicional('${concepto}', '${valor}', '${fecha}', '${contratoid}')`
-  console.log(sql)
+  const {numero,valor,fecha,responsable,acuerdoid} = req.body;
+  let sql = `CALL CrearCuotaAcuerdoPago('${numero}', '${valor}', '${fecha}','${responsable}', '${acuerdoid}')`
+  console.log(sql);
   conexion.query(sql,(err, rows, fields) => {
       if (!err) {
         res.json(rows[0]);
@@ -66,10 +89,10 @@ router.get("/contrato/:id", (req, res) => {
   );
 });
 //eliminar
-router.delete("/", (req, res) => {  
+router.delete("/", (req, res) => {
   const {id} = req.body;
-  let sql = `CALL EliminarAdicional('${id}')`
-  console.log("llego",sql);
+  let sql = `CALL EliminarCuota('${id}')`
+  console.log(sql);
   conexion.query(sql, (err, rows, fields) => {
     if (!err) {
       res.json(rows[0]);
@@ -81,8 +104,9 @@ router.delete("/", (req, res) => {
 //modificar
 router.put("/:id", (req, res) => {
   const {id} = req.params;
-  const {concepto,valor,fecha} = req.body;
-  let sql = `CALL EditarAdicional('${id}', '${concepto}', '${valor}', '${fecha}')`;
+  const {numero,valor,fecha} = req.body;
+  let sql = `CALL EditarCuotaAcuerdo('${id}', '${numero}', '${valor}', '${fecha}')`;
+  console.log(sql);
   conexion.query(sql, (err, rows, fields) => {
     if (!err) {
       if (!err) {

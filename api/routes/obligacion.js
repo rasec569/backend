@@ -31,6 +31,7 @@ router.use(function (req, res, next) {
 });
 // Listar obligaciones
 router.get('/', (req,res)=>{
+  try{
     conexion.query('CALL `ConsultarObligaciones`()', (err,rows,fields) => {
       if(!err){
         res.json(rows[0]);
@@ -38,14 +39,60 @@ router.get('/', (req,res)=>{
         console.log(err);
       }
     })
-  });
+  }catch(err) {
+    throw new Error(err)
+  }
+  
+});
+    
   // Buscar 
 router.get("/:id", (req, res) => {
     const {id} = req.params;
-    conexion.query(`CALL ConsultarAcreedor('${id}')`, (err, rows, fields) => {
+    conexion.query(`CALL ConsultarObligacion('${id}')`, (err, rows, fields) => {
       if (!err) {
         res.json(rows[0]);
       }
     });
   });
+  //crear
+router.post("/", (req, res) => {
+  const {fecha, concepto, valor, interes, total, fecha_pago, idacreedor}= req.body;
+  let sql = `CALL CrearObligacion('${fecha}', '${concepto}', '${valor}', '${interes}', '${total}', '${fecha_pago}', '${idacreedor}')`;
+  conexion.query(sql,
+    (err, rows, fields) => {
+      console.log(sql);
+      if (!err) {
+        res.json(rows[0]);
+      }else{
+        res.json(err);
+        console.log(err)
+      }
+    }
+  );
+});
+//modificar
+router.put("/:id", (req, res) => {  
+  const { id} = req.params;
+  const {fecha, concepto, valor, interes, total, fecha_pago}= req.body;
+  let sql = `CALL EditarObligacion('${id}', '${fecha}', '${concepto}', '${valor}', '${interes}', '${total}', '${fecha_pago}')`;
+  console.log(sql);
+  conexion.query(sql, (err, rows, fields) => {
+    if (!err) {
+      if (!err) {
+        res.json(rows[0]);
+      }
+    }
+  });
+});
+//eliminar 
+router.delete("/", (req, res) => {
+  const { id } = req.body;
+  conexion.query(`CALL EliminarObligacion('${id}')`, (err, rows, fields) => {
+    if (!err) {
+      res.json(rows[0]);
+    }else{
+      res.json(err);
+    }
+  });
+});
   module.exports = router;
