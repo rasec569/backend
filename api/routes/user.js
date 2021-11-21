@@ -31,7 +31,7 @@ router.use(function (req, res, next) {
 });
 // Listar usuarios
 router.get('/', (req,res)=>{
-  conexion.query('CALL `ConsultarUsuarios`()', (err,rows,fields) => {
+  conexion.query('CALL `ListarUsuarios`()', (err,rows,fields) => {
     if(!err){
       res.json(rows[0]);
     }else{

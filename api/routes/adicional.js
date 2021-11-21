@@ -33,7 +33,19 @@ router.use(function (req, res, next) {
 // listar Adionales del Proyecto
 router.get("/contrato/:id", (req, res) => {
     const { id } = req.params;
-    conexion.query(`CALL ConsultarAdicionalesContrato('${id}')`, (err, rows, fields) => {
+    conexion.query(`CALL ListarAdicionalesContrato('${id}')`, (err, rows, fields) => {
+      if (!err) {
+        res.json(rows[0]);       
+      }
+      else{
+        console.log(" error en el backend",err);
+      }
+    });
+  });
+  // listar Adionales pendientes por pagar del Proyecto
+  router.get("/pendientes/:id", (req, res) => {
+    const { id } = req.params;
+    conexion.query(`CALL ListarAdicionalesPendienteContrato('${id}')`, (err, rows, fields) => {
       if (!err) {
         res.json(rows[0]);       
       }

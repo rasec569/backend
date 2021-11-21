@@ -68,7 +68,7 @@ router.post("/", multer.array("uploads", 10), (req, res, next) => {
 });
 
 router.get("/", (req, res) => {
-  conexion.query("CALL `ConsultarArchivos`()", (err, rows, fields) => {
+  conexion.query("CALL `ListarArchivos`()", (err, rows, fields) => {
     if (!err) {
       res.json(rows[0]);
     }

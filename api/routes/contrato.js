@@ -33,7 +33,7 @@ router.use(function (req, res, next) {
 // listar contratos
 router.get("/", (req, res) => {
   conexion.query(
-    `CALL ConsultarContratos()`,
+    `CALL ListarContratos()`,
     (err, rows, fields) => {
       if (!err) {
         res.json(rows[0]);
@@ -43,11 +43,11 @@ router.get("/", (req, res) => {
     }
   );
 });
-// listar contratos del inmueble
+// listar contratos del cliente
 router.get("/cliente/:id", (req, res) => {
   const { id } = req.params;
   conexion.query(
-    `CALL ConsultarContratosClientes('${id}')`,
+    `CALL ListarContratosClientes('${id}')`,
     (err, rows, fields) => {
       if (!err) {
         res.json(rows[0]);
@@ -57,7 +57,7 @@ router.get("/cliente/:id", (req, res) => {
     }
   );
 });
-// Buscar contrato
+// Buscar contrato pendiente por sp
 router.get("/:id", (req, res) => {
   const { id } = req.params;
   let sql = `CALL ConsultarContrato('${id}')`

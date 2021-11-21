@@ -32,7 +32,7 @@ var token = req.headers.authorization.split(" ")[1];
 });
 // Listar Proyectos
 router.get('/', (req,res)=>{
-  conexion.query('CALL `ConsultarProyectos`()', (err,rows,fields) => {
+  conexion.query('CALL `ListarProyectos`()', (err,rows,fields) => {
     if(!err){
       res.json(rows[0]);
     }else{

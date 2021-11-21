@@ -32,7 +32,7 @@ var token = req.headers.authorization.split(" ")[1];
 // Listar costos inmueble
 router.get('/inmueble/:id', (req,res)=>{
   const { id } = req.params;
-    conexion.query(`CALL ConsultarCostosInmueble('${id}')`, (err,rows,fields) => {
+    conexion.query(`CALL ListarCostosInmueble('${id}')`, (err,rows,fields) => {
       if(!err){
         res.json(rows[0]);
       }else{

@@ -32,7 +32,7 @@ router.use(function (req, res, next) {
 // Listar obligaciones
 router.get('/', (req,res)=>{
   try{
-    conexion.query('CALL `ConsultarObligaciones`()', (err,rows,fields) => {
+    conexion.query('CALL `ListarObligaciones`()', (err,rows,fields) => {
       if(!err){
         res.json(rows[0]);
       }else{

@@ -33,7 +33,7 @@ router.use(function (req, res, next) {
 
 // Listar roles
 router.get('/', (req,res)=>{
-  conexion.query('CALL `ConsultarRoles`()', (err,rows,fields) => {
+  conexion.query('CALL `ListarRoles`()', (err,rows,fields) => {
     if(!err){
       res.json(rows[0]);
     }else{

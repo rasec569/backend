@@ -33,7 +33,7 @@ router.use(function (req, res, next) {
 // listar cuota del cliente
 router.get("/cliente/:id", (req, res) => {
     const { id } = req.params;
-    conexion.query(`CALL ConsultarCuotasAcuerdoPagoCliente('${id}')`, (err, rows, fields) => {
+    conexion.query(`CALL ListarCuotasAcuerdoPagoCliente('${id}')`, (err, rows, fields) => {
       if (!err) {
         res.json(rows[0]);       
       }
@@ -45,7 +45,7 @@ router.get("/cliente/:id", (req, res) => {
   
   router.get("/credito/:id", (req, res) => {
     const { id } = req.params;
-    conexion.query(`CALL ConsultarCuotasAcuerdoPagoBanco('${id}')`, (err, rows, fields) => {
+    conexion.query(`CALL ListarCuotaAcuerdoPagoBanco('${id}')`, (err, rows, fields) => {
       if (!err) {
         res.json(rows[0]);       
       }
@@ -57,7 +57,7 @@ router.get("/cliente/:id", (req, res) => {
   
   router.get("/pendiente/:id", (req, res) => {
     const { id } = req.params;
-    conexion.query(`CALL ConsultarCuotasPendientesAcuerdo('${id}')`, (err, rows, fields) => {
+    conexion.query(`CALL ListarCuotasPendientesAcuerdo('${id}')`, (err, rows, fields) => {
       if (!err) {
         res.json(rows[0]);       
       }

@@ -30,9 +30,9 @@ router.use(function (req, res, next) {
     }
 });
 
-// Listar area
+// Listar categoria
 router.get('/', (req, res) => {
-    conexion.query('CALL `ConsultarCategoria`()', (err, rows, fields) => {
+    conexion.query('CALL `ListarCategorias`()', (err, rows, fields) => {
         if (!err) {
             res.json(rows[0]);
         } else {
@@ -40,4 +40,42 @@ router.get('/', (req, res) => {
         }
     })
 });
+//crear categoria
+router.post("/", (req, res) => {
+    const {nombre, descripcion } = req.body;
+    let sql = `CALL CrearCategoria('${nombre}', '${descripcion}')`
+    console.log(sql)
+    conexion.query(
+      sql,
+      (err, rows, fields) => {
+        if (!err) {
+          res.json(rows[0]);
+        }
+      }
+    );
+  });
+  //eliminar
+router.delete("/", (req, res) => {
+    const { id } = req.body;
+    conexion.query(`CALL EliminarCategoria('${id}')`, (err, rows, fields) => {
+      if (!err) {
+        res.json(rows[0]);
+      }else{
+        res.json(err);
+      }
+    });
+  });
+  //modificar
+  router.put("/:id", (req, res) => {
+    const {id} = req.params;
+    const {nombre, descripcion} = req.body;
+    let sql = `CALL EditarCategoria('${id}', '${nombre}', '${descripcion}')`;
+    conexion.query(sql, (err, rows, fields) => {
+      if (!err) {
+        if (!err) {
+          res.json(rows[0]);
+        }
+      }
+    });
+  });
 module.exports = router;

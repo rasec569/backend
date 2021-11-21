@@ -31,7 +31,7 @@ router.use(function (req, res, next) {
 });
 // Listar egresos
 router.get('/', (req,res)=>{
-  conexion.query('CALL `ConsultarEgresos`()', (err,rows,fields) => {
+  conexion.query('CALL `ListarEgresos`()', (err,rows,fields) => {
     if(!err){
       res.json(rows[0]);
     }else{
@@ -42,7 +42,7 @@ router.get('/', (req,res)=>{
 // listar egresos de obligacion
 router.get("/obligacion/:id", (req, res) => {
     const { id } = req.params;
-    let sql=`CALL ConsultarEgresosObligacion('${id}')`;
+    let sql=`CALL ListarEgresosObligacion('${id}')`;
     console.log(sql)
     conexion.query(sql, (err, rows, fields) => {
       if (!err) {

@@ -33,7 +33,7 @@ router.use(function (req, res, next) {
 // listar aportes del Proyecto
 router.get("/contrato/:id", (req, res) => {
     const { id } = req.params;
-    conexion.query(`CALL ConsultarAcuerdosPagoCliente('${id}')`, (err, rows, fields) => {
+    conexion.query(`CALL ListarAcuerdosPagoCliente('${id}')`, (err, rows, fields) => {
       if (!err) {
         res.json(rows[0]);       
       }

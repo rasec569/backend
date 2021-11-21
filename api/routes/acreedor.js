@@ -31,7 +31,7 @@ router.use(function (req, res, next) {
 });
 // Listar acreedor
 router.get('/', (req,res)=>{
-  conexion.query('CALL `ConsultarAcreedores`()', (err,rows,fields) => {
+  conexion.query('CALL `ListarAcreedores`()', (err,rows,fields) => {
     if(!err){
       res.json(rows[0]);
     }else{

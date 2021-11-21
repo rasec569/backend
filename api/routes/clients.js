@@ -35,7 +35,7 @@ router.use(function (req, res, next) {
 
 // Listar clientes
 router.get("/", (req, res) => {
-  conexion.query("CALL `ConsultarClientes`()", (err, rows, fields) => {
+  conexion.query("CALL `ListarClientes`()", (err, rows, fields) => {
     if (!err) {
       res.json(rows[0]);
     }

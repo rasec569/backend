@@ -33,7 +33,7 @@ router.use(function (req, res, next) {
 // listar Etapas del Proyecto
 router.get("/proyecto/:id", (req, res) => {
     const { id } = req.params;
-    conexion.query(`CALL ConsultarEtapasProyecto('${id}')`, (err, rows, fields) => {
+    conexion.query(`CALL ListarEtapasProyecto('${id}')`, (err, rows, fields) => {
       if (!err) {
         res.json(rows[0]);       
       }

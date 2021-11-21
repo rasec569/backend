@@ -34,7 +34,7 @@ router.use(function (req, res, next) {
 });
 //listar todos
 router.get('/', (req,res)=>{
-  conexion.query('CALL `ConsultarInmuebles`()', (err,rows,fields) => {
+  conexion.query('CALL `ListarInmuebles`()', (err,rows,fields) => {
     if(!err){
       res.json(rows[0]);
     }else{
@@ -42,10 +42,10 @@ router.get('/', (req,res)=>{
     }
   })
 });
-//listar por proyecto ConsultarInmueblesProyecto
+//listar por proyecto 
 router.get('/proyecto/:id', (req,res)=>{
   const {id} = req.params;
-  conexion.query(`CALL ConsultarInmueblesProyecto('${id}')`, (err, rows, fields) => {
+  conexion.query(`CALL ListarInmueblesProyecto('${id}')`, (err, rows, fields) => {
     if (!err) {
       res.json(rows[0]);
     }
@@ -53,7 +53,7 @@ router.get('/proyecto/:id', (req,res)=>{
 });
 router.get('/etapa/:id', (req,res)=>{
   const {id} = req.params;
-  conexion.query(`CALL ConsultarInmueblesEtapa('${id}')`, (err, rows, fields) => {
+  conexion.query(`CALL ListarInmueblesEtapa('${id}')`, (err, rows, fields) => {
     if (!err) {
       res.json(rows[0]);
     }

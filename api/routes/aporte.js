@@ -33,7 +33,7 @@ router.use(function (req, res, next) {
 // listar aportes del acuerdo
 router.get("/acuerdo/:id", (req, res) => {
     const { id } = req.params;
-    conexion.query(`CALL ConsultarAportes('0','${id}')`, (err, rows, fields) => {
+    conexion.query(`CALL ListarAportes('0','${id}')`, (err, rows, fields) => {
       if (!err) {
         res.json(rows[0]);       
       }
@@ -45,7 +45,7 @@ router.get("/acuerdo/:id", (req, res) => {
   // listar aportes del adicionales
   router.get("/contrato/:id", (req, res) => {
     const { id } = req.params;
-    conexion.query(`CALL ConsultarAportes('${id}','0')`, (err, rows, fields) => {
+    conexion.query(`CALL ListarAportes('${id}','0')`, (err, rows, fields) => {
       if (!err) {
         res.json(rows[0]);       
       }
