@@ -54,6 +54,7 @@ router.get("/cliente/:id", (req, res) => {
       }
     });
   });
+  
   router.get("/pendiente/:id", (req, res) => {
     const { id } = req.params;
     conexion.query(`CALL ConsultarCuotasPendientesAcuerdo('${id}')`, (err, rows, fields) => {

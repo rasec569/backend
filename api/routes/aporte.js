@@ -54,10 +54,35 @@ router.get("/acuerdo/:id", (req, res) => {
       }
     });
   });
+  router.get("/detalle/:cuota/:adicional", (req, res) => {
+    console.log(req.params)
+    const { cuota } = req.params;
+    const { adicional } = req.params;
+    let sql = `CALL ConsultarAportesDetalle('${cuota}','${adicional}')`
+    console.log(sql);
+    conexion.query(sql, (err, rows, fields) => {
+      if (!err) {
+        res.json(rows[0]);       
+      }
+      else{
+        console.log(" error en el backend",err);
+      }
+    });
+  });
   // Buscar
   router.get("/:id", (req, res) => {
   const { id } = req.params;
   conexion.query(`CALL ConsultarAporte('${id}')`, (err, rows, fields) => {
+    if (!err) {
+      res.json(rows[0]);
+    }
+  });
+});
+// Buscar ultimo num aporte
+router.get("/max/:cuota/:adicional", (req, res) => {
+  const { cuota } = req.params;
+  const { adicional } = req.params;
+  conexion.query(`CALL ConsultarNumeroMaxAporte('${cuota}','${adicional}')`, (err, rows, fields) => {
     if (!err) {
       res.json(rows[0]);
     }
