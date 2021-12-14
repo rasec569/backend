@@ -1,7 +1,7 @@
 const express= require('express');
 const router= express.Router();
 // invoca la conexion
-const conexion = require('../config/conexion');
+const connection = require('../config/conexion');
 // token para las peticiones a mysql
 const jwt = require('jsonwebtoken');
 
@@ -30,62 +30,101 @@ router.use(function (req, res, next) {
     next();
   }
 });
-
-// Listar roles
-router.get('/', (req,res)=>{
-  conexion.query('CALL `ListarRoles`()', (err,rows,fields) => {
-    if(!err){
-      res.json(rows[0]);
-    }else{
-      console.log(err);
-    }
-  })
-});
-
-router.get("/:id", (req, res) => {
-  const { id } = req.params;
-  conexion.query(`CALL ConsultarRol('${id}')`, (err, rows, fields) => {
-    if (!err) {
-      res.json(rows[0]);
-    }
+// sql call 
+async function ListarRoles() {
+  return new Promise((resolve, reject) => {
+      let sql = `CALL ListarRoles()`;
+      connection.query(sql, function (err, result) {
+          if (err) reject(err);
+          resolve(result);
+      });
   });
+}
+async function ConsultarRol(req) {
+  const {id} = req.params;
+  return new Promise((resolve, reject) => {
+      let sql = `CALL ConsultarRol('${id}')`;
+      connection.query(sql, function (err, result) {
+          if (err) reject(err);
+          resolve(result);
+      });
+  });
+}
+async function CrearRol(req){
+  const {nombre, descripcion} =  req.body;
+  return new Promise((resolve, reject) => {
+    let sql = `CALL CrearRol('${nombre}', '${descripcion}')`;
+    connection.query(sql, function (err, result) {
+        if (err) reject(err);
+        resolve(result);
+    });
+});
+}
+async function EditarRol(req){
+  const { id} = req.params;
+  const {nombre, descripcion} = req.body;
+  return new Promise((resolve, reject) => {
+    let sql = `CALL EditarRol('${id}', '${nombre}','${descripcion}')`;
+    connection.query(sql, function (err, result) {
+        if (err) reject(err);
+        resolve(result);
+    });
+});
+}
+async function EliminarRol(req) {
+  const {id} = req.params;
+  return new Promise((resolve, reject) => {
+      let sql = `CALL EliminarRol('${id}')`;
+      connection.query(sql, function (err, result) {
+          if (err) reject(err);
+          resolve(result);
+      });
+  });
+}
+//Routes
+// Listar roles
+router.get('/', async (req, res, next)=>{
+  try {
+    let result = await ListarRoles();
+    res.json(result[0]);
+  } catch (error) {
+    res.json(error);
+  }
 });
 
-
+router.get("/:id", async (req, res, next)=>{
+  try {
+    let result = await ConsultarRol(req);
+    res.json(result[0]);
+  } catch (error) {
+    res.json(error);
+  }
+});
 //crear rol
-router.post("/", (req, res) => {
-  const {nombre, descripcion} =  req.body;
-  conexion.query(
-    `CALL CrearRol('${nombre}', '${descripcion}')`,
-    (err, rows, fields) => {
-      if (!err) {
-        res.json(rows[0]);
-      }
-    }
-  );
+router.post("/", async (req, res, next)=>{
+  try {
+    let result = await CrearRol(req);
+    res.json(result[0]);
+  } catch (error) {
+    res.json(error);
+  }
 });
 //eliminar 
-router.delete("/", (req, res) => {
-  const {id} = req.body;
-  conexion.query(`CALL EliminarRol('${id}')`, (err, rows, fields) => {
-    if (!err) {
-      res.json(rows[0]);
-    }else{
-      res.json(err);
-    }
-  });
+router.delete("/",async (req, res, next)=>{
+  try {
+    let result = await EditarRol(req);
+    res.json(result[0]);
+  } catch (error) {
+    res.json(error);
+  }
 });
 //modificar
-router.put("/:id", (req, res) => {
-  const {id} = req.params;
-  const {nombre, descripcion} = req.body;
-  let sql = `CALL EditarRol('${id}', '${nombre}','${descripcion}')`;
-  conexion.query(sql, (err, rows, fields) => {
-    if (!err) {
-      if (!err) {
-        res.json(rows[0]);
-      }
-    }
-  });
+router.put("/:id", async (req, res, next)=>{
+  try {
+    let result = await EliminarRol(req);
+    res.json(result[0]);
+  } catch (error) {
+    res.json(error);
+  }
 });
 module.exports = router;

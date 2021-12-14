@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 // invoca la conexion
-const conexion = require("../config/conexion");
+const connection = require("../config/conexion");
 // token para las peticiones a mysql
 const jwt = require("jsonwebtoken");
 
@@ -30,64 +30,102 @@ router.use(function (req, res, next) {
     next();
   }
 });
-// listar Etapas del Proyecto
-router.get("/proyecto/:id", (req, res) => {
-    const { id } = req.params;
-    conexion.query(`CALL ListarEtapasProyecto('${id}')`, (err, rows, fields) => {
-      if (!err) {
-        res.json(rows[0]);       
-      }
-      else{
-        console.log(" error en el backend",err);
-      }
-    });
+// sql call 
+async function ListarEtapasProyecto(req) {
+  const {id} = req.params;
+  return new Promise((resolve, reject) => {
+      let sql = `CALL ListarEtapasProyecto('${id}')`;
+      connection.query(sql, function (err, result) {
+          if (err) reject(err);
+          resolve(result);
+      });
   });
-  // Buscar etapa
-  router.get("/:id", (req, res) => {
-  const { id } = req.params;
-  let sql = `CALL ConsultarEtapa('${id}')`
-  console.log(sql)
-  conexion.query(sql, (err, rows, fields) => {
-    if (!err) {
-      res.json(rows[0]);
-    }
+}
+async function BuscarEtapa(req) {
+  const {id} = req.params;
+  return new Promise((resolve, reject) => {
+      let sql = `CALL ConsultarEtapa('${id}')`;
+      connection.query(sql, function (err, result) {
+          if (err) reject(err);
+          resolve(result);
+      });
   });
-});
-//crear Proyecto
-  router.post("/", (req, res) => {
+}
+async function CrearEtapa(req){
   const {numero,estado,manzanas,idproyecto} = req.body;
-  let sql = `CALL CrearEtapa('${numero}', '${estado}', '${manzanas}', '${idproyecto}')`
-  conexion.query(sql,(err, rows, fields) => {
-      if (!err) {
-        res.json(rows[0]);
-      }
-    }
-  );
+  return new Promise((resolve, reject) => {
+    let sql = `CALL CrearEtapa('${numero}', '${estado}', '${manzanas}', '${idproyecto}')`;
+    connection.query(sql, function (err, result) {
+        if (err) reject(err);
+        resolve(result);
+    });
+});
+}
+async function EditarEtapa(req){
+  const { id} = req.params;
+  const {numero,estado,manzanas} = req.body;
+  return new Promise((resolve, reject) => {
+    let sql = `CALL EditarEtapa('${id}', '${numero}', '${estado}', '${manzanas}')`;
+    connection.query(sql, function (err, result) {
+        if (err) reject(err);
+        resolve(result);
+    });
+});
+}
+async function EliminarEtapa(req) {
+  const {id} = req.params;
+  return new Promise((resolve, reject) => {
+      let sql = `CALL EliminarEtapa('${id}')`;
+      connection.query(sql, function (err, result) {
+          if (err) reject(err);
+          resolve(result);
+      });
+  });
+}
+//Routes
+// Listar area
+router.get("/proyecto/:id", async (req, res, next)=>{
+  try {
+    let result = await ListarEtapasProyecto(req);
+    res.json(result[0]);
+  } catch (error) {
+    res.json(error);
+  }
+});
+// Buscar area
+router.get("/:id", async (req, res, next)=>{
+  try {
+    let result = await BuscarEtapa(req);
+    res.json(result[0]);
+  } catch (error) {
+    res.json(error);
+  }
+});
+//crear area
+router.post("/", async (req, res, next)=>{
+  try {
+    let result = await CrearEtapa(req);
+    res.json(result[0]);
+  } catch (error) {
+    res.json(error);
+  }
 });
 //eliminar
-router.delete("/", (req, res) => {
-  const {id} = req.body;
-  conexion.query(`CALL EliminarEtapa('${id}')`, (err, rows, fields) => {
-    if (!err) {
-      res.json(rows[0]);
-    }else{
-      res.json(err);
-    }
-  });
+router.delete("/", async (req, res, next)=>{
+  try {
+    let result = await EliminarEtapa(req);
+    res.json(result[0]);
+  } catch (error) {
+    res.json(error);
+  }
 });
 //modificar
-router.put("/:id", (req, res) => {
-  const {id} = req.params;
-  const {numero,estado,manzanas} = req.body;
-  let sql = `CALL EditarEtapa('${id}', '${numero}', '${estado}', '${manzanas}')`;
-  console.log(sql)
-  conexion.query(sql, (err, rows, fields) => {
-    if (!err) {
-      if (!err) {
-        res.json(rows[0]);
-      }
-    }
-  });
+router.put("/:id", async (req, res, next)=>{
+  try {
+    let result = await EditarEtapa(req);
+    res.json(result[0]);
+  } catch (error) {
+    res.json(error);
+  }
 });
-
   module.exports = router;

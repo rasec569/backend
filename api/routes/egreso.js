@@ -1,7 +1,7 @@
 const express= require('express');
 const router= express.Router();
 // invoca la conexion
-const conexion = require('../config/conexion');
+const connection = require('../config/conexion');
 // token para las peticiones a mysql
 const jwt = require('jsonwebtoken');
 // check tocken
@@ -29,78 +29,121 @@ router.use(function (req, res, next) {
     next();
   }
 });
-// Listar egresos
-router.get('/', (req,res)=>{
-  conexion.query('CALL `ListarEgresos`()', (err,rows,fields) => {
-    if(!err){
-      res.json(rows[0]);
-    }else{
-      console.log(err);
-    }
-  })
-});
-// listar egresos de obligacion
-router.get("/obligacion/:id", (req, res) => {
-    const { id } = req.params;
-    let sql=`CALL ListarEgresosObligacion('${id}')`;
-    console.log(sql)
-    conexion.query(sql, (err, rows, fields) => {
-      if (!err) {
-        res.json(rows[0]);       
-      }
-      else{
-        console.log(" error en el backend",err);
-      }
-    });
+// sql call 
+async function ListarEgresos() {
+  return new Promise((resolve, reject) => {
+      let sql = `CALL ListarEgresos()`;
+      connection.query(sql, function (err, result) {
+          if (err) reject(err);
+          resolve(result);
+      });
   });
-// Buscar egreso con el parametro id que se le pasa en la direccion
-router.get("/:id", (req, res) => {
+}
+async function ListarEgresosObligacion(req) {
   const {id} = req.params;
-  conexion.query(`CALL ConsultarEgreso('${id}')`, (err, rows, fields) => {
-    if (!err) {
-      res.json(rows[0]);
-    }
+  return new Promise((resolve, reject) => {
+      let sql = `CALL ListarEgresosObligacion('${id}')`;
+      connection.query(sql, function (err, result) {
+          if (err) reject(err);
+          resolve(result);
+      });
   });
-});
-//crear egreso
-router.post("/", (req, res) => {
+}
+async function BuscarEgreso(req) {
+  const {id} = req.params;
+  return new Promise((resolve, reject) => {
+      let sql = `CALL ConsultarEgreso('${id}')`;
+      connection.query(sql, function (err, result) {
+          if (err) reject(err);
+          resolve(result);
+      });
+  });
+}
+async function CrearEgreso(req){
   const {numero, fecha, referencia, valor, obligacionid,}= req.body;
-  let sql = `CALL CrearEgreso('${numero}', '${fecha}', '${referencia}', '${valor}', '${obligacionid}')`
-  console.log(sql)
-  conexion.query(sql, (err, rows, fields) => {
-      if (!err) {
-        res.json(rows[0]);
-      }else{
-        res.json(err);
-        console.log(err)
-      }
-    }
-  );
+  return new Promise((resolve, reject) => {
+    let sql = `CALL CrearEgreso('${numero}', '${fecha}', '${referencia}', '${valor}', '${obligacionid}')`;
+    console.log(sql);
+    connection.query(sql, function (err, result) {
+        if (err) reject(err);
+        resolve(result);
+    });
 });
-//eliminar 
-router.delete("/", (req, res) => {
-  const { id } = req.body;
-  conexion.query(`CALL EliminarEgreso('${id}')`, (err, rows, fields) => {
-    if (!err) {
-      res.json(rows[0]);
-    }else{
-      res.json(err);
-    }
-  });
-});
-//modificar
-router.put("/:id", (req, res) => {
+}
+async function EditarEgreso(req){
   const { id} = req.params;
   const {numero, fecha, referencia, valor}= req.body;
-  let sql = `CALL EditarEgreso('${id}', '${numero}', '${fecha}', '${referencia}', '${valor}')`;
-  console.log(sql)
-  conexion.query(sql, (err, rows, fields) => {
-    if (!err) {
-      if (!err) {
-        res.json(rows[0]);
-      }
-    }
-  });
+  return new Promise((resolve, reject) => {
+    let sql = `CALL EditarEgreso('${id}', '${numero}', '${fecha}', '${referencia}', '${valor}')`;
+    connection.query(sql, function (err, result) {
+        if (err) reject(err);
+        resolve(result);
+    });
 });
-  
+}
+async function EliminarEgreso(req) {
+  const {id} = req.params;
+  return new Promise((resolve, reject) => {
+      let sql = `CALL EliminarEgreso('${id}')`;
+      connection.query(sql, function (err, result) {
+          if (err) reject(err);
+          resolve(result);
+      });
+  });
+}
+//Routes
+// Listar 
+router.get('/', async (req, res, next)=>{
+  try {
+    let result = await ListarEgresos();
+    res.json(result[0]);
+  } catch (error) {
+    res.json(error);
+  }
+});
+/// listar egresos de obligacion
+router.get("/obligacion/:id", async (req, res, next)=>{
+  try {
+    let result = await ListarEgresosObligacion(req);
+    res.json(result[0]);
+  } catch (error) {
+    res.json(error);
+  }
+});
+// Buscar 
+router.get("/:id", async (req, res, next)=>{
+  try {
+    let result = await BuscarEgreso(req);
+    res.json(result[0]);
+  } catch (error) {
+    res.json(error);
+  }
+});
+//crear 
+router.post("/", async (req, res, next)=>{
+  try {
+    let result = await CrearEgreso(req);
+    res.json(result[0]);
+  } catch (error) {
+    res.json(error);
+  }
+});
+//modificar
+router.put("/:id", async (req, res, next)=>{
+  try {
+    let result = await EditarEgreso(req);
+    res.json(result[0]);
+  } catch (error) {
+    res.json(error);
+  }
+});
+//eliminar 
+router.delete("/", async (req, res, next)=>{
+  try {
+    let result = await EliminarEgreso(req);
+    res.json(result[0]);
+  } catch (error) {
+    res.json(error);
+  }
+});  
 module.exports = router;

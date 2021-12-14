@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 // invoca la conexion
-const conexion = require("../config/conexion");
+const connection = require("../config/conexion");
 // token para las peticiones a mysql
 const jwt = require("jsonwebtoken");
 
@@ -30,91 +30,142 @@ router.use(function (req, res, next) {
     next();
   }
 });
-// listar cuota del cliente
-router.get("/cliente/:id", (req, res) => {
-    const { id } = req.params;
-    conexion.query(`CALL ListarCuotasAcuerdoPagoCliente('${id}')`, (err, rows, fields) => {
-      if (!err) {
-        res.json(rows[0]);       
-      }
-      else{
-        console.log(" error en el backend",err);
-      }
+
+// sql call 
+async function ListarCuotasAcuerdoPagoCliente(req) {
+  const {id} = req.params;
+  return new Promise((resolve, reject) => {
+      let sql = `CALL ListarCuotasAcuerdoPagoCliente('${id}')`;
+      console.log(sql)
+      connection.query(sql, function (err, result) {
+          if (err) reject(err);
+          resolve(result);
+      });
+  });
+}
+async function ListarCuotaAcuerdoPagoBanco(req) {
+  const {id} = req.params;
+  return new Promise((resolve, reject) => {
+      let sql = `CALL ListarCuotaAcuerdoPagoBanco('${id}')`;
+      console.log(sql)
+      connection.query(sql, function (err, result) {
+          if (err) reject(err);
+          resolve(result);
+      });
+  });
+}
+async function ListarCuotasPendientesAcuerdoPago(req) {
+  const {id} = req.params;
+  return new Promise((resolve, reject) => {
+      let sql = `CALL ListarCuotasPendientesAcuerdo('${id}')`;
+      connection.query(sql, function (err, result) {
+          if (err) reject(err);
+          resolve(result);
+      });
+  });
+}
+async function BuscarCuota(req) {
+  const {id} = req.params;
+  return new Promise((resolve, reject) => {
+      let sql = `CALL ConsultarCuota('${id}')`;
+      connection.query(sql, function (err, result) {
+          if (err) reject(err);
+          resolve(result);
+      });
+  });
+}
+
+async function CrearCuotaAcuerdoPago(req){
+  const {numero,valor,fecha,responsable,acuerdoid} = req.body;
+  return new Promise((resolve, reject) => {
+    let sql = `CALL CrearCuotaAcuerdoPago('${numero}', '${valor}', '${fecha}','${responsable}', '${acuerdoid}')`;
+    connection.query(sql, function (err, result) {
+        if (err) reject(err);
+        resolve(result);
     });
-  });
-  
-  router.get("/credito/:id", (req, res) => {
-    const { id } = req.params;
-    conexion.query(`CALL ListarCuotaAcuerdoPagoBanco('${id}')`, (err, rows, fields) => {
-      if (!err) {
-        res.json(rows[0]);       
-      }
-      else{
-        console.log(" error en el backend",err);
-      }
+});
+}
+async function EditarCuotaAcuerdo(req){
+  const { id} = req.params;
+  const {numero,valor,fecha} = req.body;
+  return new Promise((resolve, reject) => {
+    let sql = `CALL EditarCuotaAcuerdo('${id}', '${numero}', '${valor}', '${fecha}')`;
+    connection.query(sql, function (err, result) {
+        if (err) reject(err);
+        resolve(result);
     });
+});
+}
+async function EliminarCuota(req) {
+  const {id} = req.params;
+  return new Promise((resolve, reject) => {
+      let sql = `CALL EliminarCuota('${id}')`;
+      connection.query(sql, function (err, result) {
+          if (err) reject(err);
+          resolve(result);
+      });
   });
-  
-  router.get("/pendiente/:id", (req, res) => {
-    const { id } = req.params;
-    conexion.query(`CALL ListarCuotasPendientesAcuerdo('${id}')`, (err, rows, fields) => {
-      if (!err) {
-        res.json(rows[0]);       
-      }
-      else{
-        console.log(" error en el backend",err);
-      }
-    });
-  });
-  // Buscar
-  router.get("/:id", (req, res) => {
-  const { id } = req.params;
-  let sql = `CALL ConsultarCuota('${id}')`
-  console.log("este",sql);
-  conexion.query(sql, (err, rows, fields) => {
-    if (!err) {
-      res.json(rows[0]);
-    }
-  });
+}
+//Routes
+// Listar 
+router.get("/cliente/:id", async (req, res, next)=>{
+  try {
+    let result = await ListarCuotasAcuerdoPagoCliente(req);
+    res.json(result[0]);
+  } catch (error) {
+    res.json(error);
+  }
+});
+router.get('/credito/:id', async (req, res, next)=>{
+  try {
+    let result = await ListarCuotaAcuerdoPagoBanco(req);
+    res.json(result[0]);
+  } catch (error) {
+    res.json(error);
+  }
+});
+router.get('/pendiente/:id', async (req, res, next)=>{
+  try {
+    let result = await ListarCuotasPendientesAcuerdoPago(req);
+    res.json(result[0]);
+  } catch (error) {
+    res.json(error);
+  }
+});
+// Buscar
+router.get("/:id", async (req, res, next)=>{
+  try {
+    let result = await BuscarCuota(req);
+    res.json(result[0]);
+  } catch (error) {
+    res.json(error);
+  }
 });
 //crear
-  router.post("/", (req, res) => {
-  const {numero,valor,fecha,responsable,acuerdoid} = req.body;
-  let sql = `CALL CrearCuotaAcuerdoPago('${numero}', '${valor}', '${fecha}','${responsable}', '${acuerdoid}')`
-  console.log(sql);
-  conexion.query(sql,(err, rows, fields) => {
-      if (!err) {
-        res.json(rows[0]);
-      }
-    }
-  );
+router.post("/", async (req, res, next)=>{
+  try {
+    let result = await CrearCuotaAcuerdoPago(req);
+    res.json(result[0]);
+  } catch (error) {
+    res.json(error);
+  }
 });
-//eliminar
-router.delete("/", (req, res) => {
-  const {id} = req.body;
-  let sql = `CALL EliminarCuota('${id}')`
-  console.log(sql);
-  conexion.query(sql, (err, rows, fields) => {
-    if (!err) {
-      res.json(rows[0]);
-    }else{
-      res.json(err);
-    }
-  });
+//eliminar 
+router.delete("/", async (req, res, next)=>{
+  try {
+    let result = await EliminarCuota(req);
+    res.json(result[0]);
+  } catch (error) {
+    res.json(error);
+  }
 });
 //modificar
-router.put("/:id", (req, res) => {
-  const {id} = req.params;
-  const {numero,valor,fecha} = req.body;
-  let sql = `CALL EditarCuotaAcuerdo('${id}', '${numero}', '${valor}', '${fecha}')`;
-  console.log(sql);
-  conexion.query(sql, (err, rows, fields) => {
-    if (!err) {
-      if (!err) {
-        res.json(rows[0]);
-      }
-    }
-  });
+router.put("/:id", async (req, res, next)=>{
+  try {
+    let result = await EditarCuotaAcuerdo(req);
+    res.json(result[0]);
+  } catch (error) {
+    res.json(error);
+  }
 });
-
   module.exports = router;

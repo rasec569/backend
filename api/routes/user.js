@@ -1,7 +1,7 @@
 const express= require('express');
 const router= express.Router();
 // invoca la conexion
-const conexion = require('../config/conexion');
+const connection = require('../config/conexion');
 // token para las peticiones a mysql
 const jwt = require('jsonwebtoken');
 // check tocken
@@ -29,65 +29,103 @@ router.use(function (req, res, next) {
     next();
   }
 });
-// Listar usuarios
-router.get('/', (req,res)=>{
-  conexion.query('CALL `ListarUsuarios`()', (err,rows,fields) => {
-    if(!err){
-      res.json(rows[0]);
-    }else{
-      console.log(err);
-    }
-  })
-});
-// Buscar usuario con el parametro id que se le pasa en la direccion
-router.get("/:id", (req, res) => {
+// sql call 
+async function ListarUsuarios() {
+  return new Promise((resolve, reject) => {
+      let sql = `CALL ListarUsuarios()`;
+      connection.query(sql, function (err, result) {
+          if (err) reject(err);
+          resolve(result);
+      });
+  });
+}
+async function BuscarUsuario(req) {
   const {id} = req.params;
-  conexion.query(`CALL ConsultarUsuario('${id}')`, (err, rows, fields) => {
-    if (!err) {
-      res.json(rows[0]);
-    }
+  return new Promise((resolve, reject) => {
+      let sql = `CALL ConsultarUsuario('${id}')`;
+      connection.query(sql, function (err, result) {
+          if (err) reject(err);
+          resolve(result);
+      });
   });
-});
-//crear usuario
-router.post("/", (req, res) => {
+}
+async function CrearUsuario(req){
   const {nombres, apellidos, identificacion, telefono, direccion, correo, nick, password, IdRol, IdArea}= req.body;
-  conexion.query(`CALL CrearUsuario('${nombres}', '${apellidos}', '${identificacion}', '${telefono}', '${direccion}', '${correo}', '${nick}', '${password}', '${IdRol}', '${IdArea}')`,
-    (err, rows, fields) => {
-      /* console.log(rows) */
-      if (!err) {
-        res.json(rows[0]);
-      }else{
-        res.json(err);
-        console.log(err)
-      }
-    }
-  );
+  return new Promise((resolve, reject) => {
+    let sql = `CALL CrearUsuario('${nombres}', '${apellidos}', '${identificacion}', '${telefono}', '${direccion}', '${correo}', '${nick}', '${password}', '${IdRol}', '${IdArea}')`;
+    connection.query(sql, function (err, result) {
+        if (err) reject(err);
+        resolve(result);
+    });
 });
-//eliminar 
-router.delete("/", (req, res) => {
-  const { id } = req.body;
-  conexion.query(`CALL EliminarUsuario('${id}')`, (err, rows, fields) => {
-    if (!err) {
-      res.json(rows[0]);
-    }else{
-      res.json(err);
-    }
-  });
-});
-//modificar
-router.put("/:id", (req, res) => {
+}
+async function EditarUsuario(req){
   const { id} = req.params;
   const {nombres, apellidos, identificacion, telefono, direccion, correo, nick, password, IdRol, IdArea}= req.body;
-  let sql = `CALL EditarUsuario('${id}', '${nombres}', '${apellidos}', '${identificacion}', '${telefono}', '${direccion}', 
+  return new Promise((resolve, reject) => {
+    let sql = `CALL EditarUsuario('${id}', '${nombres}', '${apellidos}', '${identificacion}', '${telefono}', '${direccion}', 
                                 '${correo}', '${nick}', '${password}', '${IdRol}', '${IdArea}')`;
-  /* console.log(sql) */
-  conexion.query(sql, (err, rows, fields) => {
-    if (!err) {
-      if (!err) {
-        res.json(rows[0]);
-      }
-    }
+    connection.query(sql, function (err, result) {
+        if (err) reject(err);
+        resolve(result);
+    });
+});
+}
+async function EliminarUsuario(req) {
+  const {id} = req.params;
+  return new Promise((resolve, reject) => {
+      let sql = `CALL EliminarUsuario('${id}')`;
+      connection.query(sql, function (err, result) {
+          if (err) reject(err);
+          resolve(result);
+      });
   });
+}
+//Routes
+// Listar usuarios
+router.get('/', async (req, res, next)=>{
+  try {
+    let result = await ListarUsuarios();
+    res.json(result[0]);
+  } catch (error) {
+    res.json(error);
+  }
+});
+// Buscar usuario 
+router.get("/:id", async (req, res, next)=>{
+  try {
+    let result = await BuscarUsuario(req);
+    res.json(result[0]);
+  } catch (error) {
+    res.json(error);
+  }
+});
+//crear usuario
+router.post("/", async (req, res, next)=>{
+  try {
+    let result = await CrearUsuario(req);
+    res.json(result[0]);
+  } catch (error) {
+    res.json(error);
+  }
+});
+//eliminar 
+router.delete("/", async (req, res, next)=>{
+  try {
+    let result = await EliminarUsuario(req);
+    res.json(result[0]);
+  } catch (error) {
+    res.json(error);
+  }
+});
+//modificar
+router.put("/:id", async (req, res, next)=>{
+  try {
+    let result = await EditarUsuario(req);
+    res.json(result[0]);
+  } catch (error) {
+    res.json(error);
+  }
 });
   
 module.exports = router;

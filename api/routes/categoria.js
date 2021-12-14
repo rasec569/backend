@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 // invoca la conexion
-const conexion = require('../config/conexion');
+const connection = require('../config/conexion');
 // token para las peticiones a mysql
 const jwt = require('jsonwebtoken');
 // check tocken
@@ -29,53 +29,101 @@ router.use(function (req, res, next) {
         next();
     }
 });
-
+// sql call 
+async function ListarCategorias() {
+  return new Promise((resolve, reject) => {
+      let sql = `CALL ListarCategorias()`;
+      connection.query(sql, function (err, result) {
+          if (err) reject(err);
+          resolve(result);
+      });
+  });
+}
+async function BuscarCategoria(req) {
+  const {id} = req.params;
+  return new Promise((resolve, reject) => {
+      let sql = `CALL ConsultarCategoria('${id}')`;
+      connection.query(sql, function (err, result) {
+          if (err) reject(err);
+          resolve(result);
+      });
+  });
+}
+async function CrearCategoria(req){
+  const {nombre, descripcion } = req.body;
+  return new Promise((resolve, reject) => {
+    let sql = `CALL CrearCategoria('${nombre}', '${descripcion}')`;
+    connection.query(sql, function (err, result) {
+        if (err) reject(err);
+        resolve(result);
+    });
+});
+}
+async function EditarCategoria(req){
+  const { id} = req.params;
+  const {nombre, descripcion} = req.body;
+  return new Promise((resolve, reject) => {
+    let sql = `CALL EditarCategoria('${id}', '${nombre}', '${descripcion}')`;
+    connection.query(sql, function (err, result) {
+        if (err) reject(err);
+        resolve(result);
+    });
+});
+}
+async function EliminarCategoria(req) {
+  const {id} = req.params;
+  return new Promise((resolve, reject) => {
+      let sql = `CALL EliminarCategoria('${id}')`;
+      connection.query(sql, function (err, result) {
+          if (err) reject(err);
+          resolve(result);
+      });
+  });
+}
+//Routes
 // Listar categoria
-router.get('/', (req, res) => {
-    conexion.query('CALL `ListarCategorias`()', (err, rows, fields) => {
-        if (!err) {
-            res.json(rows[0]);
-        } else {
-            console.log(err);
-        }
-    })
+router.get('/', async (req, res, next)=>{
+  try {
+    let result = await ListarCategorias();
+    res.json(result[0]);
+  } catch (error) {
+    res.json(error);
+  }
+});
+// Buscar categoria
+router.get("/:id", async (req, res, next)=>{
+  try {
+    let result = await BuscarCategoria(req);
+    res.json(result[0]);
+  } catch (error) {
+    res.json(error);
+  }
 });
 //crear categoria
-router.post("/", (req, res) => {
-    const {nombre, descripcion } = req.body;
-    let sql = `CALL CrearCategoria('${nombre}', '${descripcion}')`
-    console.log(sql)
-    conexion.query(
-      sql,
-      (err, rows, fields) => {
-        if (!err) {
-          res.json(rows[0]);
-        }
-      }
-    );
+router.post("/", async (req, res, next)=>{
+  try {
+    let result = await CrearCategoria(req);
+    res.json(result[0]);
+  } catch (error) {
+    res.json(error);
+  }
   });
   //eliminar
-router.delete("/", (req, res) => {
-    const { id } = req.body;
-    conexion.query(`CALL EliminarCategoria('${id}')`, (err, rows, fields) => {
-      if (!err) {
-        res.json(rows[0]);
-      }else{
-        res.json(err);
-      }
-    });
+router.delete("/", async (req, res, next)=>{  
+  try {
+    let result = await EliminarCategoria(req);
+    res.json(result[0]);
+  } catch (error) {
+    res.json(error);
+  }
   });
   //modificar
-  router.put("/:id", (req, res) => {
-    const {id} = req.params;
-    const {nombre, descripcion} = req.body;
-    let sql = `CALL EditarCategoria('${id}', '${nombre}', '${descripcion}')`;
-    conexion.query(sql, (err, rows, fields) => {
-      if (!err) {
-        if (!err) {
-          res.json(rows[0]);
-        }
-      }
-    });
+  router.put("/:id", async (req, res, next)=>{
+    try {
+      let result = await EditarCategoria(req);
+      res.json(result[0]);
+    } catch (error) {
+      res.json(error);
+    }
   });
 module.exports = router;

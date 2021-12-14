@@ -10,9 +10,10 @@
     "serve": "nodemon server.js"
   },
   "keywords": [],
-  "author": "",
+  "author": "Cesar Valencia Velasquez",
   "license": "ISC",
   "dependencies": {
+    "bluebird": "^3.7.2",
     "body-parser": "^1.19.0",
     "connect-multiparty": "^2.2.0",
     "cors": "^2.8.5",
@@ -22,6 +23,7 @@
     "multer": "^1.4.3",
     "mysql": "^2.18.1",
     "nodemon": "^2.0.12",
+    "promise-mysql": "^5.0.4",
     "uuid": "^8.3.2"
   }
 }

@@ -1,7 +1,7 @@
 const express= require('express');
 const router= express.Router();
 // invoca la conexion
-const conexion = require('../config/conexion');
+const connection = require('../config/conexion');
 // token para las peticiones a mysql
 const jwt = require('jsonwebtoken');
 // check tocken
@@ -29,62 +29,104 @@ var token = req.headers.authorization.split(" ")[1];
     next();
   }
 });
-// Listar costos inmueble
-router.get('/inmueble/:id', (req,res)=>{
-  const { id } = req.params;
-    conexion.query(`CALL ListarCostosInmueble('${id}')`, (err,rows,fields) => {
-      if(!err){
-        res.json(rows[0]);
-      }else{
-        console.log(err);
-      }
-    })
+// sql call 
+async function ListarCostosInmueble(req) {
+  const {id} = req.params;
+  return new Promise((resolve, reject) => {
+      let sql = `CALL ListarCostosInmueble('${id}')`;
+      console.log(sql)
+      connection.query(sql, function (err, result) {
+          if (err) reject(err);
+          resolve(result);
+      });
   });
-  // Buscar costo
-router.get("/:id", (req, res) => {
-    const { id } = req.params;
-    conexion.query(`CALL ConsultarCosto('${id}')`, (err, rows, fields) => {
-      if (!err) {
-        res.json(rows[0]);
-      }
+}
+async function ConsultarCosto(req) {
+  const {id} = req.params;
+  return new Promise((resolve, reject) => {
+      let sql = `CALL ConsultarCosto('${id}')`;
+      connection.query(sql, function (err, result) {
+          if (err) reject(err);
+          resolve(result);
+      });
+  });
+}
+async function CrearCostoInmueble(req){
+  const {concepto, valor, idinmueble ,fecha } = req.body;
+  return new Promise((resolve, reject) => {
+    let sql =`CALL CrearCostoInmueble('${concepto}', '${valor}', '${idinmueble}', '${fecha}')`;
+    connection.query(sql, function (err, result) {
+        if (err) reject(err);
+        resolve(result);
     });
-  });
-  //crear costo
-  router.post("/", (req, res) => {
-    const {concepto, valor, idinmueble ,fecha } = req.body;
-    let sql =`CALL CrearCostoInmueble('${concepto}', '${valor}', '${idinmueble}', '${fecha}')`
-    console.log(sql)
-    conexion.query(sql,(err, rows, fields) => {
-        if (!err) {
-          res.json(rows[0]);
-        }
-      }
-    );
-  });
-  //eliminar
-  router.delete("/", (req, res) => {
-    const { id } = req.body;
-    const {idinmueble } = req.body;
-    conexion.query(`CALL EliminarCostoInmueble('${id}', '${idinmueble}')`, (err, rows, fields) => {
-      if (!err) {
-        res.json(rows[0]);
-      }else{
-        res.json(err);
-      }
-    });
-  });
-  //modificar
-  router.put("/:id", (req, res) => {
-    const {id} = req.params;
-    const {concepto, valor, idinmueble ,fecha } = req.body;
+});
+}
+async function EditarCostoInmueble(req){
+  const { id} = req.params;
+  const {concepto, valor, idinmueble ,fecha } = req.body;
+  return new Promise((resolve, reject) => {
     let sql = `CALL EditarCostoInmueble('${id}', '${concepto}', '${valor}', '${fecha}', '${idinmueble}')`;
-    console.log(sql);
-    conexion.query(sql, (err, rows, fields) => {
-      if (!err) {
-        if (!err) {
-          res.json(rows[0]);
-        }
-      }
+    connection.query(sql, function (err, result) {
+        if (err) reject(err);
+        resolve(result);
     });
+});
+}
+async function EliminarObligacion(req) {
+  const { id } = req.body;
+    const {idinmueble } = req.body;
+  return new Promise((resolve, reject) => {
+      let sql = `CALL EliminarCostoInmueble('${id}', '${idinmueble}')`;
+      connection.query(sql, function (err, result) {
+          if (err) reject(err);
+          resolve(result);
+      });
   });
+}
+//Routes
+// Listar 
+router.get('/inmueble/:id', async (req, res, next)=>{
+  try {
+    let result = await ListarCostosInmueble(req);
+    res.json(result[0]);
+  } catch (error) {
+    res.json(error);
+  }
+});
+// Buscar
+router.get("/:id", async (req, res, next)=>{
+  try {
+    let result = await ConsultarCosto(req);
+    res.json(result[0]);
+  } catch (error) {
+    res.json(error);
+  }
+});
+//crear
+router.post("/", async (req, res, next)=>{
+  try {
+    let result = await CrearCostoInmueble(req);
+    res.json(result[0]);
+  } catch (error) {
+    res.json(error);
+  }
+});
+//eliminar 
+router.delete("/", async (req, res, next)=>{
+  try {
+    let result = await EditarCostoInmueble(req);
+    res.json(result[0]);
+  } catch (error) {
+    res.json(error);
+  }
+});
+//modificar
+router.put("/:id", async (req, res, next)=>{
+  try {
+    let result = await EliminarObligacion(req);
+    res.json(result[0]);
+  } catch (error) {
+    res.json(error);
+  }
+});  
   module.exports = router;

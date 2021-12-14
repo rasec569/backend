@@ -1,7 +1,7 @@
 const express= require('express');
 const router= express.Router();
 // invoca la conexion
-const conexion = require('../config/conexion');
+const connection = require('../config/conexion');
 // token para las peticiones a mysql
 const jwt = require('jsonwebtoken');
 // check tocken
@@ -29,59 +29,101 @@ var token = req.headers.authorization.split(" ")[1];
     next();
   }
 });
+// sql call 
+async function ListarAreas() {
+  return new Promise((resolve, reject) => {
+      let sql = `CALL ListarAreas()`;
+      connection.query(sql, function (err, result) {
+          if (err) reject(err);
+          resolve(result);
+      });
+  });
+}
+async function BuscarArea(req) {
+  const {id} = req.params;
+  return new Promise((resolve, reject) => {
+      let sql = `CALL ConsultarArea('${id}')`;
+      connection.query(sql, function (err, result) {
+          if (err) reject(err);
+          resolve(result);
+      });
+  });
+}
+async function CrearArea(req){
+  const {nombre, descripcion } = req.body;
+  return new Promise((resolve, reject) => {
+    let sql = `CALL CrearArea('${nombre}', '${descripcion}')`;
+    connection.query(sql, function (err, result) {
+        if (err) reject(err);
+        resolve(result);
+    });
+});
+}
+async function EditarArea(req){
+  const { id} = req.params;
+  const {nombre, descripcion, estado} = req.body;
+  return new Promise((resolve, reject) => {
+    let sql = `CALL EditarArea('${id}', '${nombre}', '${descripcion}', '${estado}')`;
+    connection.query(sql, function (err, result) {
+        if (err) reject(err);
+        resolve(result);
+    });
+});
+}
+async function EliminarArea(req) {
+  const {id} = req.params;
+  return new Promise((resolve, reject) => {
+      let sql = `CALL EliminarArea('${id}')`;
+      connection.query(sql, function (err, result) {
+          if (err) reject(err);
+          resolve(result);
+      });
+  });
+}
+//Routes
 // Listar area
-router.get('/', (req,res)=>{
-  conexion.query('CALL `ListarAreas`()', (err,rows,fields) => {
-    if(!err){
-      res.json(rows[0]);
-    }else{
-      console.log(err);
-    }
-  })
+router.get('/', async (req, res, next)=>{
+  try {
+    let result = await ListarAreas();
+    res.json(result[0]);
+  } catch (error) {
+    res.json(error);
+  }
 });
 // Buscar area
-router.get("/:id", (req, res) => {
-  const { id } = req.params;
-  conexion.query(`CALL ConsultarArea('${id}')`, (err, rows, fields) => {
-    if (!err) {
-      res.json(rows[0]);
-    }
-  });
+router.get("/:id", async (req, res, next)=>{
+  try {
+    let result = await BuscarArea(req);
+    res.json(result[0]);
+  } catch (error) {
+    res.json(error);
+  }
 });
 //crear area
-router.post("/", (req, res) => {
-  const {nombre, descripcion } = req.body;
-  conexion.query(
-    `CALL CrearArea('${nombre}', '${descripcion}')`,
-    (err, rows, fields) => {
-      if (!err) {
-        res.json(rows[0]);
-      }
-    }
-  );
+router.post("/", async (req, res, next)=>{
+  try {
+    let result = await CrearArea(req);
+    res.json(result[0]);
+  } catch (error) {
+    res.json(error);
+  }
 });
 //eliminar
-router.delete("/", (req, res) => {
-  const { id } = req.body;
-  conexion.query(`CALL EliminarArea('${id}')`, (err, rows, fields) => {
-    if (!err) {
-      res.json(rows[0]);
-    }else{
-      res.json(err);
-    }
-  });
+router.delete("/", async (req, res, next)=>{
+  try {
+    let result = await EliminarArea(req);
+    res.json(result[0]);
+  } catch (error) {
+    res.json(error);
+  }
 });
 //modificar
-router.put("/:id", (req, res) => {
-  const {id} = req.params;
-  const {nombre, descripcion, estado} = req.body;
-  let sql = `CALL EditarArea('${id}', '${nombre}', '${descripcion}', '${estado}')`;
-  conexion.query(sql, (err, rows, fields) => {
-    if (!err) {
-      if (!err) {
-        res.json(rows[0]);
-      }
-    }
-  });
+router.put("/:id", async (req, res, next)=>{
+  try {
+    let result = await EditarArea(req);
+    res.json(result[0]);
+  } catch (error) {
+    res.json(error);
+  }
 });
 module.exports = router;

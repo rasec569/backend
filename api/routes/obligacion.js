@@ -1,7 +1,7 @@
 const express= require('express');
 const router= express.Router();
 // invoca la conexion
-const conexion = require('../config/conexion');
+const connection = require('../config/conexion');
 // token para las peticiones a mysql
 const jwt = require('jsonwebtoken');
 // check tocken
@@ -29,70 +29,101 @@ router.use(function (req, res, next) {
     next();
   }
 });
-// Listar obligaciones
-router.get('/', (req,res)=>{
-  try{
-    conexion.query('CALL `ListarObligaciones`()', (err,rows,fields) => {
-      if(!err){
-        res.json(rows[0]);
-      }else{
-        console.log(err);
-      }
-    })
-  }catch(err) {
-    throw new Error(err)
-  }
-  
-});
-    
-  // Buscar 
-router.get("/:id", (req, res) => {
-    const {id} = req.params;
-    conexion.query(`CALL ConsultarObligacion('${id}')`, (err, rows, fields) => {
-      if (!err) {
-        res.json(rows[0]);
-      }
-    });
+// sql call 
+async function ListarObligaciones() {
+  return new Promise((resolve, reject) => {
+      let sql = `CALL ListarObligaciones()`;
+      connection.query(sql, function (err, result) {
+          if (err) reject(err);
+          resolve(result);
+      });
   });
-  //crear
-router.post("/", (req, res) => {
+}
+async function BuscarObligacion(req) {
+  const {id} = req.params;
+  return new Promise((resolve, reject) => {
+      let sql = `CALL ConsultarObligacion('${id}')`;
+      connection.query(sql, function (err, result) {
+          if (err) reject(err);
+          resolve(result);
+      });
+  });
+}
+async function CrearObligacion(req){
   const {fecha, concepto, valor, interes, total, fecha_pago, idacreedor}= req.body;
-  let sql = `CALL CrearObligacion('${fecha}', '${concepto}', '${valor}', '${interes}', '${total}', '${fecha_pago}', '${idacreedor}')`;
-  conexion.query(sql,
-    (err, rows, fields) => {
-      console.log(sql);
-      if (!err) {
-        res.json(rows[0]);
-      }else{
-        res.json(err);
-        console.log(err)
-      }
-    }
-  );
+  return new Promise((resolve, reject) => {
+    let sql = `CALL CrearObligacion('${fecha}', '${concepto}', '${valor}', '${interes}', '${total}', '${fecha_pago}', '${idacreedor}')`;
+    connection.query(sql, function (err, result) {
+        if (err) reject(err);
+        resolve(result);
+    });
 });
-//modificar
-router.put("/:id", (req, res) => {  
+}
+async function EditarObligacion(req){
   const { id} = req.params;
   const {fecha, concepto, valor, interes, total, fecha_pago}= req.body;
-  let sql = `CALL EditarObligacion('${id}', '${fecha}', '${concepto}', '${valor}', '${interes}', '${total}', '${fecha_pago}')`;
-  console.log(sql);
-  conexion.query(sql, (err, rows, fields) => {
-    if (!err) {
-      if (!err) {
-        res.json(rows[0]);
-      }
-    }
+  return new Promise((resolve, reject) => {
+    let sql = `CALL EditarObligacion('${id}', '${fecha}', '${concepto}', '${valor}', '${interes}', '${total}', '${fecha_pago}')`;
+    connection.query(sql, function (err, result) {
+        if (err) reject(err);
+        resolve(result);
+    });
+});
+}
+async function EliminarObligacion(req) {
+  const {id} = req.params;
+  return new Promise((resolve, reject) => {
+      let sql = `CALL EliminarObligacion('${id}')`;
+      connection.query(sql, function (err, result) {
+          if (err) reject(err);
+          resolve(result);
+      });
   });
+}
+//Routes
+// Listar 
+router.get('/', async (req, res, next)=>{
+  try {
+    let result = await ListarObligaciones(req);
+    res.json(result[0]);
+  } catch (error) {
+    res.json(error);
+  }
+});
+// Buscar
+router.get("/:id", async (req, res, next)=>{
+  try {
+    let result = await BuscarObligacion(req);
+    res.json(result[0]);
+  } catch (error) {
+    res.json(error);
+  }
+});
+//crear
+router.post("/", async (req, res, next)=>{
+  try {
+    let result = await CrearObligacion(req);
+    res.json(result[0]);
+  } catch (error) {
+    res.json(error);
+  }
 });
 //eliminar 
-router.delete("/", (req, res) => {
-  const { id } = req.body;
-  conexion.query(`CALL EliminarObligacion('${id}')`, (err, rows, fields) => {
-    if (!err) {
-      res.json(rows[0]);
-    }else{
-      res.json(err);
-    }
-  });
+router.delete("/", async (req, res, next)=>{
+  try {
+    let result = await EditarObligacion(req);
+    res.json(result[0]);
+  } catch (error) {
+    res.json(error);
+  }
 });
+//modificar
+router.put("/:id", async (req, res, next)=>{
+  try {
+    let result = await EliminarObligacion(req);
+    res.json(result[0]);
+  } catch (error) {
+    res.json(error);
+  }
+});  
   module.exports = router;

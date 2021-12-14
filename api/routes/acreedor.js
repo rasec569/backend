@@ -1,7 +1,8 @@
 const express= require('express');
 const router= express.Router();
+
 // invoca la conexion
-const conexion = require('../config/conexion');
+const connection = require('../config/conexion');
 // token para las peticiones a mysql
 const jwt = require('jsonwebtoken');
 // check tocken
@@ -29,64 +30,101 @@ router.use(function (req, res, next) {
     next();
   }
 });
-// Listar acreedor
-router.get('/', (req,res)=>{
-  conexion.query('CALL `ListarAcreedores`()', (err,rows,fields) => {
-    if(!err){
-      res.json(rows[0]);
-    }else{
-      console.log(err);
-    }
-  })
-});
-// Buscar acreedor con el parametro id que se le pasa en la direccion
-router.get("/:id", (req, res) => {
+// sql call 
+async function listarAcreedores() {
+  return new Promise((resolve, reject) => {
+      let sql = `CALL ListarAcreedores()`;
+      connection.query(sql, function (err, result) {
+          if (err) reject(err);
+          resolve(result);
+      });
+  });
+}
+async function BuscarAcreedor(req) {
   const {id} = req.params;
-  conexion.query(`CALL ConsultarAcreedor('${id}')`, (err, rows, fields) => {
-    if (!err) {
-      res.json(rows[0]);
-    }
+  return new Promise((resolve, reject) => {
+      let sql = `CALL ConsultarAcreedor('${id}')`;
+      connection.query(sql, function (err, result) {
+          if (err) reject(err);
+          resolve(result);
+      });
   });
-});
-//crear acreedor
-router.post("/", (req, res) => {
+}
+async function CrearAcreedor(req){
   const {nombres, apellidos, identificacion, telefono, direccion, correo, descripcion}= req.body;
-  let sql = `CALL CrearAcreedor('${nombres}', '${apellidos}', '${identificacion}', '${telefono}', '${direccion}', '${correo}', '${descripcion}')`;
-  conexion.query(sql,
-    (err, rows, fields) => {
-      console.log(sql);
-      if (!err) {
-        res.json(rows[0]);
-      }else{
-        res.json(err);
-        console.log(err)
-      }
-    }
-  );
+  return new Promise((resolve, reject) => {
+    let sql = `CALL CrearAcreedor('${nombres}', '${apellidos}', '${identificacion}', '${telefono}', '${direccion}', '${correo}', '${descripcion}')`;
+    connection.query(sql, function (err, result) {
+        if (err) reject(err);
+        resolve(result);
+    });
 });
-//eliminar 
-router.delete("/", (req, res) => {
-  const { id } = req.body;
-  conexion.query(`CALL EliminarAcreedor('${id}')`, (err, rows, fields) => {
-    if (!err) {
-      res.json(rows[0]);
-    }else{
-      res.json(err);
-    }
-  });
-});
-//modificar
-router.put("/:id", (req, res) => {  
+}
+async function EditarAcreedor(req){
   const { id} = req.params;
   const {nombres, apellidos, identificacion, telefono, direccion, correo, descripcion}= req.body;
-  let sql = `CALL EditarAcreedor('${id}', '${nombres}', '${apellidos}', '${identificacion}', '${telefono}', '${direccion}', '${correo}', '${descripcion}')`;
-  conexion.query(sql, (err, rows, fields) => {
-    if (!err) {
-      if (!err) {
-        res.json(rows[0]);
-      }
-    }
-  });
+  return new Promise((resolve, reject) => {
+    let sql = `CALL EditarAcreedor('${id}', '${nombres}', '${apellidos}', '${identificacion}', '${telefono}', '${direccion}', '${correo}', '${descripcion}')`;
+    connection.query(sql, function (err, result) {
+        if (err) reject(err);
+        resolve(result);
+    });
 });
-  
+}
+async function EliminarAcreedor(req) {
+  const {id} = req.params;
+  return new Promise((resolve, reject) => {
+      let sql = `CALL EliminarAcreedor('${id}')`;
+      connection.query(sql, function (err, result) {
+          if (err) reject(err);
+          resolve(result);
+      });
+  });
+}
+//Routes
+// Listar acreedor
+router.get('/', async (req, res, next)=>{
+  try {
+    let result = await listarAcreedores();
+    res.json(result[0]);
+  } catch (error) {
+    res.json(error);
+  }
+});
+// Buscar acreedor
+router.get("/:id", async (req, res, next)=>{
+  try {
+    let result = await BuscarAcreedor(req);
+    res.json(result[0]);
+  } catch (error) {
+    res.json(error);
+  }
+});
+//crear acreedor
+router.post("/", async (req, res, next)=>{
+  try {
+    let result = await CrearAcreedor(req);
+    res.json(result[0]);
+  } catch (error) {
+    res.json(error);
+  }
+});
+//modificar
+router.put("/:id", async (req, res, next)=>{  
+  try {
+    let result = await EditarAcreedor(req);
+    res.json(result[0]);
+  } catch (error) {
+    res.json(error);
+  }
+});
+//eliminar 
+router.delete("/", async (req, res, next)=>{
+  try {
+    let result = await EliminarAcreedor(req);
+    res.json(result[0]);
+  } catch (error) {
+    res.json(error);
+  }
+});  
 module.exports = router;

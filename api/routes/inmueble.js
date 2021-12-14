@@ -1,7 +1,7 @@
 const express= require('express');
 const router= express.Router();
 // invoca la conexion
-const conexion = require('../config/conexion');
+const connection = require('../config/conexion');
 // token para las peticiones a mysql
 const jwt = require('jsonwebtoken');
 
@@ -32,77 +32,157 @@ router.use(function (req, res, next) {
     next();
   }
 });
-//listar todos
-router.get('/', (req,res)=>{
-  conexion.query('CALL `ListarInmuebles`()', (err,rows,fields) => {
-    if(!err){
-      res.json(rows[0]);
-    }else{
-      console.log(err);
-    }
-  })
-});
-//listar por proyecto 
-router.get('/proyecto/:id', (req,res)=>{
-  const {id} = req.params;
-  conexion.query(`CALL ListarInmueblesProyecto('${id}')`, (err, rows, fields) => {
-    if (!err) {
-      res.json(rows[0]);
-    }
+// sql call 
+async function ListarInmuebles() {
+  return new Promise((resolve, reject) => {
+      let sql = `CALL ListarInmuebles()`;
+      connection.query(sql, function (err, result) {
+          if (err) reject(err);
+          resolve(result);
+      });
   });
-});
-router.get('/etapa/:id', (req,res)=>{
+}
+async function ListarInmueblesProyecto(req) {
   const {id} = req.params;
-  conexion.query(`CALL ListarInmueblesEtapa('${id}')`, (err, rows, fields) => {
-    if (!err) {
-      res.json(rows[0]);
-    }
+  return new Promise((resolve, reject) => {
+      let sql = `CALL ListarInmueblesProyecto('${id}')`;
+      connection.query(sql, function (err, result) {
+          if (err) reject(err);
+          resolve(result);
+      });
   });
-});
-//Buscar inmueble
-router.get('/:id', (req,res)=>{
+}
+async function ListaInmueblesVenta(req) {
   const {id} = req.params;
-  conexion.query(`CALL ConsultarInmueble('${id}')`, (err, rows, fields) => {
-    if (!err) {
-      res.json(rows[0]);
-    }
+  return new Promise((resolve, reject) => {
+      let sql = `CALL ListaInmueblesVenta('${id}')`;
+      connection.query(sql, function (err, result) {
+          if (err) reject(err);
+          resolve(result);
+      });
   });
+}
+async function ListarInmueblesEtapa(req) {
+  const {id} = req.params;
+  return new Promise((resolve, reject) => {
+      let sql = `CALL ListarInmueblesEtapa('${id}')`;
+      connection.query(sql, function (err, result) {
+          if (err) reject(err);
+          resolve(result);
+      });
+  });
+}
+async function BuscarInmueble(req) {
+  const {id} = req.params;
+  return new Promise((resolve, reject) => {
+      let sql = `CALL ConsultarInmueble('${id}')`;
+      console.log(sql)
+      connection.query(sql, function (err, result) {
+          if (err) reject(err);
+          resolve(result);
+      });
+  });
+}
+
+async function CrearInmueble(req){
+  const {manzana, casa, Valor_Inicial, Valor_Final, catastral, escritura, matricula, estado, idproyecto, idetapa}= req.body; 
+  return new Promise((resolve, reject) => {
+    let sql = `CALL CrearInmueble('${manzana}', '${casa}', '${Valor_Inicial}', '${Valor_Final}', '${catastral}', '${escritura}', '${matricula}', '${estado}', '${idproyecto}','${idetapa}')`;
+    connection.query(sql, function (err, result) {
+        if (err) reject(err);
+        resolve(result);
+    });
+});
+}
+async function EditarInmueble(req){
+  const { id} = req.params;
+  const {manzana, casa, Valor_Inicial, Valor_Final, catastral, escritura, matricula, estado, idproyecto, idetapa}= req.body;
+  return new Promise((resolve, reject) => {
+    let sql = `CALL EditarInmueble('${id}', '${manzana}', '${casa}', '${Valor_Inicial}','${Valor_Final}', '${catastral}', '${escritura}', '${matricula}', '${estado}', '${idproyecto}','${idetapa}')`;
+    connection.query(sql, function (err, result) {
+        if (err) reject(err);
+        resolve(result);
+    });
+});
+}
+async function EliminarInmueble(req) {
+  const {id} = req.params;
+  return new Promise((resolve, reject) => {
+      let sql = `CALL EliminarProyecto('${id}')`;
+      connection.query(sql, function (err, result) {
+          if (err) reject(err);
+          resolve(result);
+      });
+  });
+}
+//Routes
+// Listar 
+router.get('/', async (req, res, next)=>{
+  try {
+    let result = await ListarInmuebles();
+    res.json(result[0]);
+  } catch (error) {
+    res.json(error);
+  }
+});
+// Buscar
+router.get("/:id", async (req, res, next)=>{
+  try {
+    let result = await BuscarInmueble(req);
+    res.json(result[0]);
+  } catch (error) {
+    res.json(error);
+  }
+});
+router.get('/proyecto/:id', async (req, res, next)=>{
+  try {
+    let result = await ListarInmueblesProyecto(req);
+    res.json(result[0]);
+  } catch (error) {
+    res.json(error);
+  }
+});
+router.get('/etapa/:id', async (req, res, next)=>{
+  try {
+    let result = await ListarInmueblesEtapa(req);
+    res.json(result[0]);
+  } catch (error) {
+    res.json(error);
+  }
+});
+router.get('/venta/:id', async (req, res, next)=>{
+  try {
+    let result = await ListaInmueblesVenta(req);
+    res.json(result[0]);
+  } catch (error) {
+    res.json(error);
+  }
 });
 //crear
-router.post("/", (req, res) => {
-  const {manzana, casa, Valor_Inicial, Valor_Final, catastral, escritura, matricula, estado, idproyecto, idetapa}= req.body;    
-  let sql = `CALL CrearInmueble('${manzana}', '${casa}', '${Valor_Inicial}', '${Valor_Final}', '${catastral}', '${escritura}', '${matricula}', '${estado}', '${idproyecto}','${idetapa}')`
-  console.log(sql)
-  conexion.query(sql,(err, rows, fields) => {      
-      if (!err) {
-        res.json(rows[0]);
-      }
-    }    
-  );
+router.post("/", async (req, res, next)=>{
+  try {
+    let result = await CrearInmueble(req);
+    res.json(result[0]);
+  } catch (error) {
+    res.json(error);
+  }
 });
 //eliminar 
-router.delete("/", (req, res) => {
-  const { id } = req.body;
-  conexion.query(`CALL EliminarInmueble('${id}')`, (err, rows, fields) => {
-    if (!err) {
-      res.json(rows[0]);
-    }else{
-      res.json(err);
-    }
-  });
+router.delete("/", async (req, res, next)=>{
+  try {
+    let result = await EliminarInmueble(req);
+    res.json(result[0]);
+  } catch (error) {
+    res.json(error);
+  }
 });
 //modificar
-router.put("/:id", (req, res) => {
-  const {id} = req.params;
-  const {manzana, casa, Valor_Inicial, Valor_Final, catastral, escritura, matricula, estado, idproyecto, idetapa}= req.body;
-  let sql = `CALL EditarInmueble('${id}', '${manzana}', '${casa}', '${Valor_Inicial}','${Valor_Final}', '${catastral}', '${escritura}', '${matricula}', '${estado}', '${idproyecto}','${idetapa}')`;
-  console.log(sql)
-  conexion.query(sql, (err, rows, fields) => {
-    if (!err) {
-      if (!err) {
-        res.json(rows[0]);
-      }
-    }
-  });
+router.put("/:id", async (req, res, next)=>{
+  try {
+    let result = await EditarInmueble(req);
+    res.json(result[0]);
+  } catch (error) {
+    res.json(error);
+  }
 });
 module.exports = router;

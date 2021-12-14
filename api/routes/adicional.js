@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 // invoca la conexion
-const conexion = require("../config/conexion");
+const connection = require("../config/conexion");
 // token para las peticiones a mysql
 const jwt = require("jsonwebtoken");
 
@@ -30,78 +30,121 @@ router.use(function (req, res, next) {
     next();
   }
 });
-// listar Adionales del Proyecto
-router.get("/contrato/:id", (req, res) => {
-    const { id } = req.params;
-    conexion.query(`CALL ListarAdicionalesContrato('${id}')`, (err, rows, fields) => {
-      if (!err) {
-        res.json(rows[0]);       
-      }
-      else{
-        console.log(" error en el backend",err);
-      }
+// sql call 
+async function ListarAdicionalesContrato(req) {
+  const { id } = req.params;
+  return new Promise((resolve, reject) => {
+      let sql = `CALL ListarAdicionalesContrato('${id}')`;
+      connection.query(sql, function (err, result) {
+          if (err) reject(err);
+          resolve(result);
+      });
+  });
+}
+async function ListarAdicionalesPendientePago(req) {
+  const { id } = req.params;
+  return new Promise((resolve, reject) => {
+      let sql = `CALL ListarAdicionalesPendienteContrato('${id}')`;
+      connection.query(sql, function (err, result) {
+          if (err) reject(err);
+          resolve(result);
+      });
+  });
+}
+async function BuscarAdicional(req) {
+  const {id} = req.params;
+  return new Promise((resolve, reject) => {
+      let sql = `CALL ConsultarAdicional('${id}')`;
+      connection.query(sql, function (err, result) {
+          if (err) reject(err);
+          resolve(result);
+      });
+  });
+}
+async function CrearAdicional(req){
+  const {concepto,descripcion,valor,fecha,contratoid} = req.body;
+  return new Promise((resolve, reject) => {
+    let sql = `CALL CrearAdicional('${concepto}','${descripcion}', '${valor}', '${fecha}', '${contratoid}')`;
+    connection.query(sql, function (err, result) {
+        if (err) reject(err);
+        resolve(result);
     });
+});
+}
+async function EditarAdicional(req){
+  const {id} = req.params;
+  const {concepto,descripcion,valor,fecha} = req.body;
+  return new Promise((resolve, reject) => {
+    let sql = `CALL EditarAdicional('${id}', '${concepto}','${descripcion}', '${valor}', '${fecha}')`;
+    connection.query(sql, function (err, result) {
+        if (err) reject(err);
+        resolve(result);
+    });
+});
+}
+async function EliminarAdicional(req) {
+  const {id} = req.params;
+  return new Promise((resolve, reject) => {
+      let sql = `CALL EliminarAdicional('${id}')`;
+      connection.query(sql, function (err, result) {
+          if (err) reject(err);
+          resolve(result);
+      });
+  });
+}
+//Routes
+// listar Adionales del Proyecto
+router.get("/contrato/:id", async (req, res, next)=>{
+  try {
+    let result = await ListarAdicionalesContrato(req);
+    res.json(result[0]);
+  } catch (error) {
+    res.json(error);
+  }
   });
   // listar Adionales pendientes por pagar del Proyecto
-  router.get("/pendientes/:id", (req, res) => {
-    const { id } = req.params;
-    conexion.query(`CALL ListarAdicionalesPendienteContrato('${id}')`, (err, rows, fields) => {
-      if (!err) {
-        res.json(rows[0]);       
-      }
-      else{
-        console.log(" error en el backend",err);
-      }
-    });
+  router.get("/pendientes/:id", async (req, res, next)=>{
+    try {
+      let result = await ListarAdicionalesPendientePago(req);
+      res.json(result[0]);
+    } catch (error) {
+      res.json(error);
+    }
   });
   // Buscar Adicional
-  router.get("/:id", (req, res) => {
-  const { id } = req.params;
-  let sql = `CALL ConsultarAdicional('${id}')`
-  console.log(sql);
-  conexion.query(sql, (err, rows, fields) => {
-    if (!err) {
-      res.json(rows[0]);
+  router.get("/:id", async (req, res, next)=>{
+    try {
+      let result = await BuscarAdicional(req);
+      res.json(result[0]);
+    } catch (error) {
+      res.json(error);
     }
-  });
 });
 //crear
-  router.post("/", (req, res) => {
-  const {concepto,valor,fecha,contratoid} = req.body;
-  let sql = `CALL CrearAdicional('${concepto}', '${valor}', '${fecha}', '${contratoid}')`
-  console.log(sql)
-  conexion.query(sql,(err, rows, fields) => {
-      if (!err) {
-        res.json(rows[0]);
-      }
+  router.post("/", async (req, res, next)=>{
+    try {
+      let result = await CrearAdicional(req);
+      res.json(result[0]);
+    } catch (error) {
+      res.json(error);
     }
-  );
 });
 //eliminar
-router.delete("/", (req, res) => {  
-  const {id} = req.body;
-  let sql = `CALL EliminarAdicional('${id}')`
-  console.log("llego",sql);
-  conexion.query(sql, (err, rows, fields) => {
-    if (!err) {
-      res.json(rows[0]);
-    }else{
-      res.json(err);
-    }
-  });
+router.delete("/", async (req, res, next)=>{  
+  try {
+    let result = await EliminarAdicional(req);
+    res.json(result[0]);
+  } catch (error) {
+    res.json(error);
+  }
 });
 //modificar
-router.put("/:id", (req, res) => {
-  const {id} = req.params;
-  const {concepto,valor,fecha} = req.body;
-  let sql = `CALL EditarAdicional('${id}', '${concepto}', '${valor}', '${fecha}')`;
-  conexion.query(sql, (err, rows, fields) => {
-    if (!err) {
-      if (!err) {
-        res.json(rows[0]);
-      }
-    }
-  });
+router.put("/:id", async (req, res, next)=>{
+  try {
+    let result = await EditarAdicional(req);
+    res.json(result[0]);
+  } catch (error) {
+    res.json(error);
+  }
 });
-
   module.exports = router;
