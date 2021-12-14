@@ -4,10 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon server.js",
+    "start": "node server.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "live": "nodemon server.js",
-    "serve": "nodemon server.js"
+    "live": "node server.js",
+    "serve": "node server.js"
   },
   "keywords": [],
   "author": "Cesar Valencia Velasquez",
