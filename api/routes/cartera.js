@@ -42,9 +42,28 @@ async function listarCartera() {
       });
   });
 }
+async function ListarCarteraProyecto(req) {
+  const {id} = req.params;
+  return new Promise((resolve, reject) => {
+      let sql = `CALL ListarCarteraProyecto('${id}')`;
+      connection.query(sql, function (err, result) {
+          if (err) reject(err);
+          resolve(result);
+      });
+  });
+}
 router.get('/', async (req, res, next)=>{
   try {
     let result = await listarCartera();
+    res.json(result[0]);
+  } catch (error) {
+    res.json(error);
+  }
+});
+// Listar area
+router.get("/proyecto/:id", async (req, res, next)=>{
+  try {
+    let result = await ListarCarteraProyecto(req);
     res.json(result[0]);
   } catch (error) {
     res.json(error);
