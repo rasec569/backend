@@ -76,6 +76,7 @@ async function EditarProyecto(req){
   const {nombre, ubicacion, estado} = req.body;
   return new Promise((resolve, reject) => {
     let sql = `CALL EditarProyecto('${id}', '${nombre}', '${ubicacion}', '${estado}')`;
+    console.log(sql);
     connection.query(sql, function (err, result) {
         if (err) reject(err);
         resolve(result);
@@ -132,7 +133,7 @@ router.post("/", async (req, res, next)=>{
 //eliminar 
 router.delete("/", async (req, res, next)=>{
   try {
-    let result = await EditarProyecto(req);
+    let result = await EliminarProyecto(req);
     res.json(result[0]);
   } catch (error) {
     res.json(error);
@@ -141,7 +142,7 @@ router.delete("/", async (req, res, next)=>{
 //modificar
 router.put("/:id", async (req, res, next)=>{
   try {
-    let result = await EliminarProyecto(req);
+    let result = await EditarProyecto(req);
     res.json(result[0]);
   } catch (error) {
     res.json(error);
