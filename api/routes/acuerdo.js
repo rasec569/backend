@@ -67,6 +67,7 @@ async function EditarAcuerdo(req){
   const {aporte_cliente,valor_credito,entidad} = req.body;
   return new Promise((resolve, reject) => {
     let sql = `CALL EditarAcuerdoPagoCliente('${id}', '${aporte_cliente}', '${valor_credito}', '${entidad}')`;
+    console.log(sql);
     connection.query(sql, function (err, result) {
         if (err) reject(err);
         resolve(result);

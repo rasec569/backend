@@ -60,7 +60,6 @@ router.get('/', async (req, res, next)=>{
     res.json(error);
   }
 });
-// Listar area
 router.get("/proyecto/:id", async (req, res, next)=>{
   try {
     let result = await ListarCarteraProyecto(req);

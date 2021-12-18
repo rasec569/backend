@@ -58,6 +58,7 @@ async function ListarCuotasPendientesAcuerdoPago(req) {
   const {id} = req.params;
   return new Promise((resolve, reject) => {
       let sql = `CALL ListarCuotasPendientesAcuerdo('${id}')`;
+      console.log(sql);
       connection.query(sql, function (err, result) {
           if (err) reject(err);
           resolve(result);

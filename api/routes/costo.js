@@ -30,11 +30,19 @@ var token = req.headers.authorization.split(" ")[1];
   }
 });
 // sql call 
+async function listarCostos() {
+  return new Promise((resolve, reject) => {
+      let sql = 'CALL `ListarCostos`()';
+      connection.query(sql, function (err, result) {
+          if (err) reject(err);
+          resolve(result);
+      });
+  });
+}
 async function ListarCostosInmueble(req) {
   const {id} = req.params;
   return new Promise((resolve, reject) => {
       let sql = `CALL ListarCostosInmueble('${id}')`;
-      console.log(sql)
       connection.query(sql, function (err, result) {
           if (err) reject(err);
           resolve(result);
@@ -61,6 +69,17 @@ async function CrearCostoInmueble(req){
     });
 });
 }
+async function AsociarCostoInmueble(req){
+  const {id, idinmueble ,fecha } = req.body;
+  return new Promise((resolve, reject) => {
+    let sql =`CALL AsociarCostoInmuble('${id}','${idinmueble}', '${fecha}')`;
+    console.log(sql);
+    connection.query(sql, function (err, result) {
+        if (err) reject(err);
+        resolve(result);
+    });
+});
+}
 async function EditarCostoInmueble(req){
   const { id} = req.params;
   const {concepto, valor, idinmueble ,fecha } = req.body;
@@ -72,7 +91,7 @@ async function EditarCostoInmueble(req){
     });
 });
 }
-async function EliminarObligacion(req) {
+async function EliminarCosto(req) {
   const { id } = req.body;
     const {idinmueble } = req.body;
   return new Promise((resolve, reject) => {
@@ -85,6 +104,14 @@ async function EliminarObligacion(req) {
 }
 //Routes
 // Listar 
+router.get('/', async (req, res, next)=>{
+  try {
+    let result = await listarCostos();
+    res.json(result[0]);
+  } catch (error) {
+    res.json(error);
+  }
+});
 router.get('/inmueble/:id', async (req, res, next)=>{
   try {
     let result = await ListarCostosInmueble(req);
@@ -111,10 +138,19 @@ router.post("/", async (req, res, next)=>{
     res.json(error);
   }
 });
+//crear
+router.post("/asociar/", async (req, res, next)=>{
+  try {
+    let result = await AsociarCostoInmueble(req);
+    res.json(result[0]);
+  } catch (error) {
+    res.json(error);
+  }
+});
 //eliminar 
 router.delete("/", async (req, res, next)=>{
   try {
-    let result = await EditarCostoInmueble(req);
+    let result = await EliminarCosto(req);
     res.json(result[0]);
   } catch (error) {
     res.json(error);
@@ -123,7 +159,7 @@ router.delete("/", async (req, res, next)=>{
 //modificar
 router.put("/:id", async (req, res, next)=>{
   try {
-    let result = await EliminarObligacion(req);
+    let result = await EditarCostoInmueble (req);
     res.json(result[0]);
   } catch (error) {
     res.json(error);
