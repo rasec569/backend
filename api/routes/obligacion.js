@@ -39,6 +39,24 @@ async function ListarObligaciones() {
       });
   });
 }
+async function ListarObligacionesVencidas() {
+  return new Promise((resolve, reject) => {
+      let sql = `CALL ListarObligaciones()`;
+      connection.query(sql, function (err, result) {
+          if (err) reject(err);
+          resolve(result);
+      });
+  });
+}
+async function ListarObligacionesPagar() {
+  return new Promise((resolve, reject) => {
+      let sql = `CALL ListarObligacionesPorPagar()`;
+      connection.query(sql, function (err, result) {
+          if (err) reject(err);
+          resolve(result);
+      });
+  });
+}
 async function BuscarObligacion(req) {
   const {id} = req.params;
   return new Promise((resolve, reject) => {
@@ -82,6 +100,22 @@ async function EliminarObligacion(req) {
 }
 //Routes
 // Listar 
+router.get('/vencidas/', async (req, res, next)=>{
+  try {
+    let result = await ListarObligacionesVencidas(req);
+    res.json(result[0]);
+  } catch (error) {
+    res.json(error);
+  }
+});
+router.get('/pagar/', async (req, res, next)=>{
+  try {
+    let result = await ListarObligacionesPagar(req);
+    res.json(result[0]);
+  } catch (error) {
+    res.json(error);
+  }
+});
 router.get('/', async (req, res, next)=>{
   try {
     let result = await ListarObligaciones(req);

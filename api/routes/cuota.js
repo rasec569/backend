@@ -32,6 +32,26 @@ router.use(function (req, res, next) {
 });
 
 // sql call 
+async function ListarCuotasVencidas(req) {
+  return new Promise((resolve, reject) => {
+      let sql = `CALL ListarCuotasVencidas()`;
+      console.log(sql)
+      connection.query(sql, function (err, result) {
+          if (err) reject(err);
+          resolve(result);
+      });
+  });
+}
+async function ListarCuotasPorPagar(req) {
+  return new Promise((resolve, reject) => {
+      let sql = `CALL ListarCuotasPorPagar()`;
+      console.log(sql)
+      connection.query(sql, function (err, result) {
+          if (err) reject(err);
+          resolve(result);
+      });
+  });
+}
 async function ListarCuotasAcuerdoPagoCliente(req) {
   const {id} = req.params;
   return new Promise((resolve, reject) => {
@@ -109,6 +129,22 @@ async function EliminarCuota(req) {
 }
 //Routes
 // Listar 
+router.get('/vencidas/', async (req, res, next)=>{
+  try {
+    let result = await ListarCuotasVencidas();
+    res.json(result[0]);
+  } catch (error) {
+    res.json(error);
+  }
+});
+router.get('/pagar/', async (req, res, next)=>{
+  try {
+    let result = await ListarCuotasPorPagar();
+    res.json(result[0]);
+  } catch (error) {
+    res.json(error);
+  }
+});
 router.get("/cliente/:id", async (req, res, next)=>{
   try {
     let result = await ListarCuotasAcuerdoPagoCliente(req);
