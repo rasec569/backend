@@ -68,9 +68,9 @@ async function BuscarObligacion(req) {
   });
 }
 async function CrearObligacion(req){
-  const {fecha, concepto, valor, interes, total, fecha_pago, idacreedor}= req.body;
+  const {fecha, concepto, valor, interes, valor_interes, total, fecha_pago, idacreedor}= req.body;
   return new Promise((resolve, reject) => {
-    let sql = `CALL CrearObligacion('${fecha}', '${concepto}', '${valor}', '${interes}', '${total}', '${fecha_pago}', '${idacreedor}')`;
+    let sql = `CALL CrearObligacion('${fecha}', '${concepto}', '${valor}', '${interes}','${valor_interes}', '${total}', '${fecha_pago}', '${idacreedor}')`;
     connection.query(sql, function (err, result) {
         if (err) reject(err);
         resolve(result);
@@ -79,9 +79,9 @@ async function CrearObligacion(req){
 }
 async function EditarObligacion(req){
   const { id} = req.params;
-  const {fecha, concepto, valor, interes, total, fecha_pago}= req.body;
+  const {fecha, concepto, valor, interes, valor_interes, total, fecha_pago}= req.body;
   return new Promise((resolve, reject) => {
-    let sql = `CALL EditarObligacion('${id}', '${fecha}', '${concepto}', '${valor}', '${interes}', '${total}', '${fecha_pago}')`;
+    let sql = `CALL EditarObligacion('${id}', '${fecha}', '${concepto}', '${valor}', '${interes}','${valor_interes}','${total}', '${fecha_pago}')`;
     connection.query(sql, function (err, result) {
         if (err) reject(err);
         resolve(result);
