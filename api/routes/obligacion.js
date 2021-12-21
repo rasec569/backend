@@ -145,7 +145,7 @@ router.post("/", async (req, res, next)=>{
 //eliminar 
 router.delete("/", async (req, res, next)=>{
   try {
-    let result = await EditarObligacion(req);
+    let result = await EliminarObligacion (req);
     res.json(result[0]);
   } catch (error) {
     res.json(error);
@@ -154,7 +154,7 @@ router.delete("/", async (req, res, next)=>{
 //modificar
 router.put("/:id", async (req, res, next)=>{
   try {
-    let result = await EliminarObligacion(req);
+    let result = await EditarObligacion(req);
     res.json(result[0]);
   } catch (error) {
     res.json(error);

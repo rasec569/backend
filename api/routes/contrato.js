@@ -133,7 +133,7 @@ router.post("/", async (req, res, next)=>{
 //eliminar 
 router.delete("/", async (req, res, next)=>{
   try {
-    let result = await EditarContratoCliente(req);
+    let result = await EliminarContratoCliente(req);
     res.json(result[0]);
   } catch (error) {
     res.json(error);
@@ -142,7 +142,7 @@ router.delete("/", async (req, res, next)=>{
 //modificar
 router.put("/:id", async (req, res, next)=>{
   try {
-    let result = await EliminarContratoCliente(req);
+    let result = await EditarContratoCliente (req);
     res.json(result[0]);
   } catch (error) {
     res.json(error);
